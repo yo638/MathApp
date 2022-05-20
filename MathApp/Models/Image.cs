@@ -9,5 +9,6 @@ namespace MathApp.Models
     {
         public string idImage { get; set; }
         public string image { get; set; }
+
     }
 }

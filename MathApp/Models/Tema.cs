@@ -9,7 +9,13 @@ namespace MathApp.Models
     {
         public string idTema { get; set; }
         public string temaName { get; set; }
+        public string description { get; set; }
+        public string type { get; set; }
         public string creationDate { get; set; }
+        public string updateDate { get; set; }
         public string eventDate { get; set; }
+        public string user { get; set; }
+        public string deletionstatus { get; set; }
+
     }
 }

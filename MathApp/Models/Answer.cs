@@ -7,8 +7,9 @@ namespace MathApp.Models
 {
     public class Answer
     {
-        public string idAnswer { get; set; }
-        public string answer { get; set; }
-        public string validity { get; set; }
+        public string idAnswer;
+        public string answer;
+        public string validity;
+
     }
 }

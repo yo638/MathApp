@@ -10,5 +10,6 @@ namespace MathApp.Models
         public string idCategory { get; set; }
         public string grade { get; set; }
         public string dificulty { get; set; }
+
     }
 }
