@@ -10,34 +10,42 @@
 <div>
     <h4>User</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.GetIdUser())
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.GetIdUser())
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.GetUsername())
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.GetUsername())
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.GetEmail())
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.GetEmail())
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.GetPassword())
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.GetPassword())
-        </dd>
-    </dl>
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        <!--<form action="AccountController/Login" method="POST">-->
+        <dl class="row">
+            <dt class="col-sm-2">
+                Email
+            </dt>
+            <dd class="col-sm-10">
+                <!--<input id="email" type="text" />-->
+                @Html.TextBoxFor(m => m.email, new { @class = "form-control" })
+            </dd>
+            <dt class="col-sm-2">
+                Password
+            </dt>
+            <dd class="col-sm-10">
+                <!--<input id="password" type="text" />-->
+                @Html.TextBoxFor(m => m.password, new { @class = "form-control" })
+            </dd>
+            <dt>
+                <input id="submitbtn" type="submit" value="What you see" />
+            </dt>
+        </dl>
+        <!--</form>-->
+
+    }
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+        </script>
+    }
+        
+        <div>
+            @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+            <a asp-action="Index">Back to List</a>
+        </div>

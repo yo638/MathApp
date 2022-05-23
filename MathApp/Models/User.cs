@@ -7,10 +7,10 @@ namespace MathApp.Models
 {
     public class User
     {
-        public string idUser;
-        public string username;
-        public string email;
-        public string password;
+        public string idUser { get; set; }
+        public string username { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
 
     }
 }
