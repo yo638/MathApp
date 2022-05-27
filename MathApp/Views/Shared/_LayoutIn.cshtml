@@ -11,6 +11,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script>
+        $('html').on('click', function () {
+            parent.$('#frame').trigger('click');
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -23,20 +28,37 @@
 
                 <div class="collapse navbar-collapse" id="navbarColor01">
                     <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Create">
+                                Моите задачи
+                                <span class="visually-hidden">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                Теми
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                Тестове
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                Състезания
+                            </a>
+                        </li>
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link active" asp-area="" asp-controller="Account" asp-action="Login">
-                                    Вход
-                                    <span class="visually-hidden">(current)</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active" asp-area="" asp-controller="Account" asp-action="Register">
-                                    Регистрация
-                                    <span class="visually-hidden">(current)</span>
-                                </a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">Моят Профил</a>
+                                <div class="dropdown-menu show" data-bs-popper="none">
+                                    <a class="dropdown-item" href="#">Настройки</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Изход</a>
+                                </div>
                             </li>
                         </ul>
                     </div>

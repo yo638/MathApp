@@ -5,47 +5,40 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Login</h1>
+<h1>Вход</h1>
 
 <div>
-    <h4>User</h4>
     <hr />
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
-        <!--<form action="AccountController/Login" method="POST">-->
         <dl class="row">
             <dt class="col-sm-2">
-                Email
+                Имейл
             </dt>
             <dd class="col-sm-10">
-                <!--<input id="email" type="text" />-->
-                @Html.TextBoxFor(m => m.email, new { @class = "form-control" })
+                @Html.TextBoxFor(model => model.email, new { @class = "form-control", Value = "email2@gmail.com" })
             </dd>
             <dt class="col-sm-2">
-                Password
+                Парола
             </dt>
             <dd class="col-sm-10">
-                <!--<input id="password" type="text" />-->
-                @Html.TextBoxFor(m => m.password, new { @class = "form-control" })
+                @Html.TextBoxFor(model => model.password, new { @class = "form-control", @type = "password", Value = "111111aA" })
             </dd>
             <dt>
-                <input id="submitbtn" type="submit" value="What you see" />
+                <input id="submitbtn" type="submit" value="Вход" />
             </dt>
         </dl>
-        <!--</form>-->
-
     }
 </div>
-    @if (ViewBag.Message != null)
-    {
-        <script type="text/javascript">
-            window.onload = function () {
-                alert("@ViewBag.Message");
-            };
-        </script>
-    }
-        
-        <div>
-            @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-            <a asp-action="Index">Back to List</a>
-        </div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+    </script>
+}
+
+<div>
+    @Html.ActionLink("Register", "Register") |
+    <a asp-action="Register">Back to List</a>
+</div>

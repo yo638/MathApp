@@ -23,7 +23,7 @@ namespace MathApp.Controllers
         Connection connection = new Connection();
         public IActionResult Index()
         {
-            List<Answer> answers = new List<Answer>();
+            /*List<Answer> answers = new List<Answer>();
             //Connect to MySQL
             using (MySqlConnection con = new MySqlConnection("server=localhost;user=root;database=bank;port=3307;password=%s1WnX6*"))
             {
@@ -43,8 +43,8 @@ namespace MathApp.Controllers
                 reader.Close();
             }
 
-
-            return View(connection.getAnswer());
+            */
+            return View();
         }
 
         public IActionResult Privacy()

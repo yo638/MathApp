@@ -1,0 +1,54 @@
+﻿@model MathApp.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Регистрация</h1>
+
+<div>
+    <hr />
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post)) {
+<dl class="row">
+    <dt class="col-sm-2">
+        Потребителско име:
+    </dt>
+    <dd class="col-sm-10">
+        @Html.TextBoxFor(model => model.username, new { @class = "form-control" })
+    </dd>
+    <dt class="col-sm-2">
+        Имейл:
+    </dt>
+    <dd class="col-sm-10">
+        @Html.TextBoxFor(model => model.email, new { @class = "form-control" })
+    </dd>
+    <dt class="col-sm-2">
+        Парола:
+    </dt>
+    <dd class="col-sm-10">
+        @Html.TextBoxFor(model => model.password, new { @class = "form-control", @type = "password" })
+    </dd>
+    <dt class="col-sm-2">
+        Повторете паролата:
+    </dt>
+    <dd class="col-sm-10">
+        @Html.TextBoxFor(model => model.repeatpassword, new { @class = "form-control", @type = "password" })
+    </dd>
+    <dt>
+        <input id="submitbtn" type="submit" value="Регистрация" />
+    </dt>
+</dl>
+    }
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+    </script>
+}
+<div>
+    @Html.ActionLink("Log in", "Login") |
+    <a asp-action="Register">Back to List</a>
+</div>

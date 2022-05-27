@@ -1,0 +1,30 @@
+﻿@model MathApp.Models.Zadacha
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+
+<h1 style="margin-top:5rem">Нова задача</h1>
+
+<div>
+    <hr />
+    @using (Html.BeginForm("Create", "Zadachi", FormMethod.Post))
+    {
+<fieldset>
+    <div class="form-group">
+        <label for="uslovie" class="form-label mt-4">Условие</label>
+        @Html.TextAreaFor(model => model.text, new { @class = "form-control", @id = "uslovie", @rows = "4" })
+    </div>
+    <div class="form-group">
+        <label for="reshenie" class="form-label mt-4">Решение</label>
+        @Html.TextAreaFor(model => model.text, new { @class = "form-control", @id = "uslovie", @rows = "4" })
+    </div>
+
+</fieldset>
+            }
+    </div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
