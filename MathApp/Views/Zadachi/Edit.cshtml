@@ -1,15 +1,18 @@
 ﻿@model MathApp.Models.Zadacha
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_LayoutIn.cshtml";
 }
-<h1 style="margin-top:5rem">Нова задача</h1>
+<h1 style="margin-top:5rem">Редактирай</h1>
 
 <div>
     <hr />
     <form method="post">
         <fieldset>
+            <input type="hidden" name="idZadacha" value="@Model.idZadacha" />
+            <input type="hidden" name="user" value="@Model.user" />
+            <input type="hidden" name="creationDate" value="@Model.creationDate" />
             <table style="width:100%;">
                 <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Условие</legend></td></tr>
                 <tr>
@@ -62,8 +65,8 @@
                 }
                 <tr>
                     <td colspan="2" style="text-align:right">
-                        <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Zadachi/AddAnswer" />
-                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Zadachi/RemoveAnswer" />
+                        <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Zadachi/AddAnswerEdit" />
+                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Zadachi/RemoveAnswerEdit" />
                     </td>
                 </tr>
                 <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
@@ -73,6 +76,7 @@
                     {
                         <tr>
                             <td>
+                                <input type="hidden" name="categories[@i].idCategory" value="@Model.categories[i].idCategory" />
                                 <div class="form-group">
                                     <label for="categories[@i].grade" class="form-label mt-4">Клас</label>
                                     <select name="categories[@i].grade" value="@Model.categories[i].grade" class="form-select" id="categories[@i].grade">
@@ -112,14 +116,13 @@
                 }
                 <tr>
                     <td colspan="2" style="text-align:right">
-                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Zadachi/AddCategory" />
-                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Zadachi/RemoveCategory" />
+                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Zadachi/AddCategoryEdit" />
+                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Zadachi/RemoveCategoryEdit" />
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" style="text-align:right">
-                        <input type="submit" class="btn btn-primary" value="Назад" formaction="/Zadachi/Browse" style="margin-top:1.5rem;" />
-                        <input type="submit" class="btn btn-primary" value="Запази задачата" formaction="/Zadachi/Create" style="margin-top:1.5rem;" />
+                        <input type="submit" class="btn btn-primary" value="Запази промените" formaction="/Zadachi/Edit/" style="margin-top:1.5rem;" />
                     </td>
                 </tr>
             </table>

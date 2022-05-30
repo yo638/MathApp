@@ -33,12 +33,12 @@ namespace MathApp.Controllers
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Задачата беше създадена.");
-                    return View("Browse");
+                    return View("Browse", connection.getZadachiByUser(user.idUser));
                 }
                 else
                 {
                     ViewBag.MessageType = string.Format("error");
-                    ViewBag.Message = string.Format("Нещо се обърка.");
+                    ViewBag.Message = string.Format("Нещо се объркаddddddddddddddd.");
                     return View(zadacha);
                 }
             }
@@ -50,13 +50,13 @@ namespace MathApp.Controllers
             }
         }
         [HttpPost]
-        public IActionResult AddAnswer( Zadacha zadacha)
+        public IActionResult AddAnswerCreate( Zadacha zadacha)
         {
             zadacha.answers.Add(new Answer("Отговор",true));
             return View("Create",zadacha);
         }
         [HttpPost]
-        public IActionResult RemoveAnswer(Zadacha zadacha)
+        public IActionResult RemoveAnswerCreate(Zadacha zadacha)
         {
             if(zadacha.answers.Count > 0) {
             zadacha.answers.RemoveAt(zadacha.answers.Count - 1);
@@ -69,13 +69,13 @@ namespace MathApp.Controllers
             return View("Create", zadacha);
         }
         [HttpPost]
-        public IActionResult AddCategory(Zadacha zadacha)
+        public IActionResult AddCategoryCreate(Zadacha zadacha)
         {
             zadacha.categories.Add(new Category(1,"A"));
             return View("Create", zadacha);
         }
         [HttpPost]
-        public IActionResult RemoveCategory(Zadacha zadacha)
+        public IActionResult RemoveCategoryCreate(Zadacha zadacha)
         {
             if (zadacha.categories.Count > 0)
             {
@@ -90,7 +90,73 @@ namespace MathApp.Controllers
         }
         public IActionResult Edit(int id)
         {
-            return View(connection.getZadachaByID(id));
+            return View("Edit",connection.getZadachaByID(id));
+        }
+        [HttpPost]
+        public IActionResult Edit(Zadacha zadacha)
+        {
+            if (!String.IsNullOrEmpty(zadacha.uslovie))
+            {
+                zadacha.updateDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                if(connection.UpdateZadacha(zadacha))
+                {
+                    ViewBag.MessageType = string.Format("success");
+                    ViewBag.Message = string.Format("Промените бяха запазени.");
+                    return View("Browse", connection.getZadachiByUser(zadacha.user));
+                }
+                else
+                {
+                    ViewBag.MessageType = string.Format("error");
+                    ViewBag.Message = string.Format("Нещо се обърка.");
+                    return View("Edit",zadacha);
+                }
+            }
+            else
+            {
+                ViewBag.MessageType = string.Format("warning");
+                ViewBag.Message = string.Format("Моля, попълнете условие на задачата.");
+                return View("Edit",zadacha);
+            }
+        }
+        [HttpPost]
+        public IActionResult AddAnswerEdit(Zadacha zadacha)
+        {
+            zadacha.answers.Add(new Answer("Отговор", true));
+            return View("Edit", zadacha);
+        }
+        [HttpPost]
+        public IActionResult RemoveAnswerEdit(Zadacha zadacha)
+        {
+            if (zadacha.answers.Count > 0)
+            {
+                zadacha.answers.RemoveAt(zadacha.answers.Count - 1);
+            }
+            else
+            {
+                ViewBag.MessageType = string.Format("warning");
+                ViewBag.Message = string.Format("Няма отговор за премахване.");
+            }
+            return View("Edit", zadacha);
+        }
+        [HttpPost]
+        public IActionResult AddCategoryEdit(Zadacha zadacha)
+        {
+            zadacha.categories.Add(new Category(1, "A"));
+            return View("Edit", zadacha);
+        }
+        [HttpPost]
+        public IActionResult RemoveCategoryEdit(Zadacha zadacha)
+        {
+            if (zadacha.categories.Count > 0)
+            {
+                zadacha.categories.RemoveAt(zadacha.categories.Count - 1);
+            }
+            else
+            {
+                ViewBag.MessageType = string.Format("warning");
+                ViewBag.Message = string.Format("Няма сложност за премахване.");
+            }
+            return View("Edit", zadacha);
         }
         public IActionResult Browse()
         {

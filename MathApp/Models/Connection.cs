@@ -111,6 +111,7 @@ namespace MathApp.Models
                 else return false;
             }
         }
+
         //ZADACHI
         public bool CreateZadacha(Zadacha zadacha)
         {
@@ -137,18 +138,19 @@ namespace MathApp.Models
                     {
                         for (int i = 0; i < zadacha.answers.Count; i++)
                         {
-                            command = "INSERT INTO `math_app`.`answers` ( `answer`, `validity`) VALUES ('" + zadacha.answers[i].answer + "','" + Convert.ToInt32(zadacha.answers[i].validity) + "');";
+                            command = "INSERT IGNORE INTO `math_app`.`answers` ( `answer`, `validity`) VALUES ('" + zadacha.answers[i].answer + "','" + Convert.ToInt32(zadacha.answers[i].validity) + "');";
                             mycommand = new MySqlCommand(command, myconnection);
                             mycommand.ExecuteNonQuery();
-                            command = "SELECT * FROM `math_app`.`answers` WHERE `answer`='" + zadacha.answers[i].answer + "' AND `validity`='" + Convert.ToInt32(zadacha.answers[i].validity) + "';";
+                            command = "SELECT `id_answer` FROM `math_app`.`answers` WHERE `answer`='" + zadacha.answers[i].answer + "' AND `validity`='" + Convert.ToInt32(zadacha.answers[i].validity) + "';";
+                            myconnection.Open();
                             mycommand = new MySqlCommand(command, myconnection);
-                            MySqlDataReader readerIDAnswer = mycommand.ExecuteReader();
-                            while (readerIDAnswer.Read())
+                            MySqlDataReader reader = mycommand.ExecuteReader();
+                            while (reader.Read())
                             {
-                                answerID = Convert.ToInt32(readerIDAnswer["id_answer"].ToString());
+                                answerID = Convert.ToInt32(reader["id_answer"].ToString());
                             }
-                            readerIDAnswer.Close();
-                            command = "INSERT INTO `math_app`.`junction_zadachi_answers` ( `zadacha`, `answer`) VALUES ('" + zadacha.idZadacha + "','" + answerID + "');";
+                            reader.Close();
+                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_answers` ( `zadacha`, `answer`) VALUES ('" + zadacha.idZadacha + "','" + answerID + "');";
                             mycommand = new MySqlCommand(command, myconnection);
                             mycommand.ExecuteNonQuery();
                         }
@@ -158,15 +160,7 @@ namespace MathApp.Models
                     {
                         for (int i = 0; i < zadacha.categories.Count; i++)
                         {
-                            command = "SELECT * FROM math_app.categories WHERE grade='" + zadacha.categories[i].grade + "' AND difficulty='" + zadacha.categories[i].difficulty + "';";
-                            mycommand = new MySqlCommand(command, myconnection);
-                            MySqlDataReader readerIDCategory = mycommand.ExecuteReader();
-                            while (readerIDCategory.Read())
-                            {
-                                categoryID = Convert.ToInt32(readerIDCategory["id_category"].ToString());
-                            }
-                            readerIDCategory.Close();
-                            command = "INSERT INTO `math_app`.`junction_zadachi_categories` ( `zadacha`, `category`) VALUES ('" + zadacha.idZadacha + "','" + categoryID + "');";
+                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_categories` ( `zadacha`, `category`) VALUES ('" + zadacha.idZadacha + "','" + zadacha.categories[i].idCategory + "');";
                             mycommand = new MySqlCommand(command, myconnection);
                             mycommand.ExecuteNonQuery();
                         }
@@ -174,11 +168,14 @@ namespace MathApp.Models
                     return true;
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
+
+
 
         public IEnumerable<Zadacha> getZadachiByUser(string userID)
         {
@@ -199,11 +196,27 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
+                    int time = 0;
+                    DateTime nowdate=DateTime.Now;
+                    for (int i = 0; i < zadachi.Count; i++)
+                    {
+                        DateTime update = DateTime.Parse(zadachi[i].updateDate);
+                        time=(nowdate.Date - update.Date).Days;
+
+                        if(time==0) zadachi[i].timeago = "today";
+                        else if(time==1) zadachi[i].timeago = "yesterday";
+                        else if (time < 7) zadachi[i].timeago = time.ToString() + " days ago";
+                        else if (time < 30) { time = time / 7; zadachi[i].timeago = time.ToString() + " weeks ago"; }
+                        else if (time < 365) { time = time / 30; zadachi[i].timeago = time.ToString() + " months ago"; }
+                        else { time = time / 365; zadachi[i].timeago = time.ToString() + " years ago"; }
+
+                    }
                     return zadachi;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return zadachi;
             }
         }
@@ -211,6 +224,7 @@ namespace MathApp.Models
         public Zadacha getZadachaByID(int zadachaID)
         {
             Zadacha zadacha = new Zadacha();
+            zadacha.idZadacha = zadachaID;
             try
             {
                 using (myconnection)
@@ -226,6 +240,7 @@ namespace MathApp.Models
                         zadacha.solution = readerZadacha["solution"].ToString();
                         zadacha.creationDate = readerZadacha["creation_date"].ToString();
                         zadacha.updateDate = readerZadacha["update_date"].ToString();
+                        zadacha.user = readerZadacha["user"].ToString();
                     }
                     readerZadacha.Close();
 
@@ -234,29 +249,96 @@ namespace MathApp.Models
                     MySqlDataReader readerAnswr = mycommand.ExecuteReader();
                     while (readerAnswr.Read())
                     {
-                        zadacha.answers.Add(new Answer(readerAnswr["answer"].ToString(), Convert.ToBoolean(readerAnswr["validity"].ToString())));
+                        zadacha.answers.Add(new Answer(readerAnswr["answer"].ToString(), Convert.ToBoolean(Convert.ToInt32(readerAnswr["validity"].ToString()))));
                     }
                     readerAnswr.Close();
 
-                    command = "SELECT c.grade, c.difficulty FROM math_app.categories c JOIN math_app.`junction_zadachi_categories` jzc ON c.id_category=jzc.category JOIN math_app.zadachi z ON z.id_zadacha=jzc.zadacha WHERE z.id_zadacha='"+zadachaID+"';";
+                    command = "SELECT c.id_category, c.grade, c.difficulty FROM math_app.categories c JOIN math_app.`junction_zadachi_categories` jzc ON c.id_category=jzc.category JOIN math_app.zadachi z ON z.id_zadacha=jzc.zadacha WHERE z.id_zadacha='" + zadachaID+"';";
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader readerCatg = mycommand.ExecuteReader();
                     while (readerCatg.Read())
                     {
-                        zadacha.categories.Add(new Category(Convert.ToInt32(readerCatg["grade"].ToString()), (readerCatg["difficulty"].ToString()));
+                        zadacha.categories.Add(new Category(Convert.ToInt32(readerCatg["id_category"].ToString()), Convert.ToInt32(readerCatg["grade"].ToString()), (readerCatg["difficulty"].ToString())));
                     }
                     readerCatg.Close();
 
                     return zadacha;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return zadacha;
             }
         }
 
+        public bool UpdateZadacha(Zadacha zadacha)
+        {
+            try
+            {
+                using (myconnection)
+                {
+                    int answerID = 0, categoryID=0;
+                    string command = "UPDATE `math_app`.`zadachi` SET `uslovie`='"+zadacha.uslovie+"', `solution`='"+zadacha.solution+"', `update_date`='"+zadacha.updateDate+"' WHERE `id_zadacha`='"+zadacha.idZadacha+"';";
+                    myconnection.Open();
+                    mycommand = new MySqlCommand(command, myconnection);
+                    mycommand.ExecuteNonQuery();
 
+                    command = "DELETE FROM `math_app`.`junction_zadachi_answers` WHERE `zadacha`='"+zadacha.idZadacha+"';";
+                    mycommand = new MySqlCommand(command, myconnection);
+                    mycommand.ExecuteNonQuery();
+
+                    if (zadacha.answers.Count > 0)
+                    {
+                        for (int i = 0; i < zadacha.answers.Count; i++)
+                        {
+                            command = "INSERT IGNORE INTO `math_app`.`answers` (`answer`, `validity`) VALUES ('" + zadacha.answers[i].answer + "','" + Convert.ToInt32(zadacha.answers[i].validity) + "');";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            mycommand.ExecuteNonQuery();
+                            command = "SELECT `id_answer` FROM `math_app`.`answers` WHERE `answer`='" + zadacha.answers[i].answer + "' AND `validity`='" + Convert.ToInt32(zadacha.answers[i].validity) + "';";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            MySqlDataReader readerIDAnsr = mycommand.ExecuteReader();
+                            while (readerIDAnsr.Read())
+                            {
+                                answerID = Convert.ToInt32(readerIDAnsr["id_answer"].ToString());
+                            }
+                            readerIDAnsr.Close();
+                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_answers` (`zadacha`, `answer`) VALUES ('" + zadacha.idZadacha + "','" + answerID + "');";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            mycommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    command = "DELETE FROM `math_app`.`junction_zadachi_categories` WHERE `zadacha`='" + zadacha.idZadacha + "';";
+                    mycommand = new MySqlCommand(command, myconnection);
+                    mycommand.ExecuteNonQuery();
+                    if (zadacha.categories.Count > 0)
+                    {
+                        for (int i = 0; i < zadacha.categories.Count; i++)
+                        {
+                            command = "SELECT `id_category` FROM `math_app`.`categories` WHERE `grade`='" + zadacha.categories[i].grade + "' AND `difficulty`='" + zadacha.categories[i].difficulty + "';";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            MySqlDataReader readerIDCatgr = mycommand.ExecuteReader();
+                            while (readerIDCatgr.Read())
+                            {
+                                categoryID = Convert.ToInt32(readerIDCatgr["id_category"].ToString());
+                            }
+                            readerIDCatgr.Close();
+
+                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_categories` (`zadacha`, `category`) VALUES ('" + zadacha.idZadacha + "','" + categoryID + "');";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            mycommand.ExecuteNonQuery();
+                        }
+                    }
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
 
     }
 }

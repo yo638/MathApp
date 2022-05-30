@@ -22,6 +22,7 @@ namespace MathApp.Models
         public string updateDate { get; set; }
         public string user { get; set; }
         public string deletionStatus { get; set; }
+        public string timeago { get; set; }
 
         public Zadacha()
         {
