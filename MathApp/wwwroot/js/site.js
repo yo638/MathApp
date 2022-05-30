@@ -2,8 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-<script type="text/javascript">
-    $(document).ready(function () {
+    /*$(document).ready(function () {
         $('#show_password').hover(function show() {
             //Change the attribute to text  
             $('#txtPassword').attr('type', 'text');
@@ -19,8 +18,8 @@
         $('#Password').attr('type', $(this).is(':checked') ? 'text' : 'password');  
             });  
         });
-</script>
-
+*/
+/*
 $('html').on('click', function () {
     parent.$('#frame').trigger('click');
 });
@@ -54,4 +53,4 @@ $(window).on('click', function () {
 
 $(document).on('click', function () {
     $('#layers').hide();
-})
+})*/

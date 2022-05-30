@@ -29,7 +29,7 @@
                 <div class="collapse navbar-collapse" id="navbarColor01">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Create">
+                            <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Browse">
                                 Моите задачи
                                 <span class="visually-hidden">(current)</span>
                             </a>
@@ -52,13 +52,15 @@
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">Моят Профил</a>
-                                <div class="dropdown-menu show" data-bs-popper="none">
-                                    <a class="dropdown-item" href="#">Настройки</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Изход</a>
-                                </div>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                    Моят Профил
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout">
+                                    Изход
+                                </a>
                             </li>
                         </ul>
                     </div>

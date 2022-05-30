@@ -1,0 +1,44 @@
+﻿@model IEnumerable<MathApp.Models.Zadacha>
+
+@{
+    ViewData["Title"] = "Browse";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+
+<h1 style="margin-top:5rem">Моите задачи</h1>
+
+<div class="list-group">
+    <a asp-action="Create" target="_parent"><button class="btn btn-primary">Създай нова задача</button></a>
+    @if (Model != null)
+    {
+        @for (var i = 0; i < Model.Count(); i=i+2)
+        {
+            <a href="/Zadachi/Edit/@Model.ElementAt(i).idZadacha" class="list-group-item list-group-item-action flex-column align-items-start active">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Задача @(i+1)</h5>
+                    <small>3 days ago</small>
+                </div>
+                <p class="mb-1">@Model.ElementAt(i).uslovie</p>
+                <small>Donec id elit non mi porta.</small>
+            </a>
+            <a href="/Zadachi/Edit/@Model.ElementAt(@i+1).idZadacha" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Задача @(i+2)</h5>
+                    <small>3 days ago</small>
+                </div>
+                <p class="mb-1">@Model.ElementAt(@i+1).uslovie</p>
+                <small>Donec id elit non mi porta.</small>
+            </a>
+        }
+    }
+
+
+
+
+</div>
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+    </script>
+}

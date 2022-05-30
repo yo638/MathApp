@@ -8,8 +8,13 @@ namespace MathApp.Models
     public class Category
     {
         public string idCategory { get; set; }
-        public string grade { get; set; }
-        public string dificulty { get; set; }
-
+        public int grade { get; set; }
+        public string difficulty { get; set; }
+        public Category() { }
+        public Category(int grade, string difficulty)
+        {
+            this.grade = grade;
+            this.difficulty = difficulty;
+        }
     }
 }

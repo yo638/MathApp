@@ -53,7 +53,7 @@ namespace MathApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Zadachi}/{action=Create}/{id?}");
+                    pattern: "{controller=Account}/{action=Login}/{id?}");
             });
         }
     }

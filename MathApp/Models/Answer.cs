@@ -7,9 +7,15 @@ namespace MathApp.Models
 {
     public class Answer
     {
-        public string idAnswer;
-        public string answer;
-        public string validity;
+        public string idAnswer { get; set; }
+        public string answer { get; set; }
+        public bool validity { get; set; }
+        public Answer() { }
+        public Answer(String answer, bool validity){
+            this.answer = answer;
+            this.validity = validity;
+        }
 
     }
+
 }

@@ -44,7 +44,7 @@ namespace MathApp.Controllers
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Вие се логнахте успешно.");
-                    HttpContext.Session.SetString("UserSession", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
+                    HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
                     return LocalRedirect("/Home/Index");
                 }
                 else {
