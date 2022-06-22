@@ -7,7 +7,7 @@ namespace MathApp.Models
 {
     public class Tema
     {
-        public string idTema { get; set; }
+        public int idTema { get; set; }
         public string temaName { get; set; }
         public string description { get; set; }
         public string type { get; set; }

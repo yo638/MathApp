@@ -20,7 +20,7 @@ namespace MathApp.Models
         public List<Category> categories { get; set; }
         public string creationDate { get; set; }
         public string updateDate { get; set; }
-        public string user { get; set; }
+        public int user { get; set; }
         public string deletionStatus { get; set; }
         public string timeago { get; set; }
 

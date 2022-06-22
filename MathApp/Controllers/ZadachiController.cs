@@ -29,7 +29,7 @@ namespace MathApp.Controllers
                 zadacha.user = user.idUser;
                 zadacha.creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 zadacha.updateDate = zadacha.creationDate;
-                if(connection.CreateZadacha(zadacha))
+                if(connection.createZadacha(zadacha))
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Задачата беше създадена.");
@@ -38,7 +38,7 @@ namespace MathApp.Controllers
                 else
                 {
                     ViewBag.MessageType = string.Format("error");
-                    ViewBag.Message = string.Format("Нещо се объркаddddddddddddddd.");
+                    ViewBag.Message = string.Format("Моля, опитайте отново.");
                     return View(zadacha);
                 }
             }
@@ -98,7 +98,7 @@ namespace MathApp.Controllers
             if (!String.IsNullOrEmpty(zadacha.uslovie))
             {
                 zadacha.updateDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                if(connection.UpdateZadacha(zadacha))
+                if(connection.updateZadacha(zadacha))
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Промените бяха запазени.");
@@ -107,7 +107,7 @@ namespace MathApp.Controllers
                 else
                 {
                     ViewBag.MessageType = string.Format("error");
-                    ViewBag.Message = string.Format("Нещо се обърка.");
+                    ViewBag.Message = string.Format("Моля, опитайте отново.");
                     return View("Edit",zadacha);
                 }
             }
@@ -160,8 +160,28 @@ namespace MathApp.Controllers
         }
         public IActionResult Browse()
         {
+            if (!string.IsNullOrEmpty((string)TempData["MessageType"]) && !string.IsNullOrEmpty((string)TempData["Message"]))
+            {
+                ViewBag.MessageType = string.Format((string)TempData["MessageType"]);
+                ViewBag.Message = string.Format((string)TempData["Message"]);
+            }
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             return View(connection.getZadachiByUser(user.idUser));
         }
+        public IActionResult AddToRecycleBin(int id)
+        {
+            if (connection.addZadachaToRecycleBin(id))
+            {
+                TempData["MessageType"] = "success";
+                TempData["Message"] = "Промените бяха запазени.";
+            }
+            else
+            {
+                TempData["MessageType"] = "error";
+                TempData["Message"] = "Моля, опитайте отново.";
+            }
+            return RedirectToAction("Browse", "Zadachi");
+        }
+
     }
 }

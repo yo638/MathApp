@@ -4,7 +4,17 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_LayoutIn.cshtml";
 }
-<h1 style="margin-top:5rem">Редактирай</h1>
+<style>
+    #breadcrumb {
+        color: #78c2ad;
+        background-color: #fff;
+    }
+</style>
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a  href="/Zadachi/Browse" >Моите задачи</a> / Редактирай задача
+</p>
+
+<h1 style="margin-top:2rem">Редактирай</h1>
 
 <div>
     <hr />
@@ -121,15 +131,43 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="text-align:right">
+                    <td style="text-align:left">
+                        <input type="submit" class="btn btn-primary" value="Назад" formaction="/Zadachi/Browse" style="margin-top:1.5rem;" />
+                    </td>
+                    <td style="text-align:right">
+                        <button type="button" id="recycle" class="btn btn-danger" style="margin-top:1.5rem;">Изтрии задачата</button>
                         <input type="submit" class="btn btn-primary" value="Запази промените" formaction="/Zadachi/Edit/" style="margin-top:1.5rem;" />
                     </td>
                 </tr>
             </table>
         </fieldset>
+
+
+        <div class="modal" id="mymodal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Изтриване на задачата</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Сигурни ли сте, че искате да пратите задачата в Recycle bin?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" asp-action="AddToRecycleBin" asp-route-id="@Model.idZadacha" class="btn btn-danger">Да, искам</button>
+                        <!--<input type="submit" class="btn btn-danger" value="Да, искам" formaction="/Zadachi/AddToRecycleBin/" />-->
+                        <button type="button" id="closemodal" class="btn btn-primary" data-bs-dismiss="modal">Не, не искам</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 
 </div>
+
 @if (ViewBag.Message != null)
 {
     <script>
@@ -137,7 +175,29 @@
         ViewData.Clear();
     </script>
 }
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+
+<script>
+    var modal = document.getElementById("mymodal");
+    var btn = document.getElementById("recycle");
+    var span1 = document.getElementsByClassName("btn-close")[0];
+    var span2 = document.getElementById("closemodal");
+
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    span1.onclick = function () {
+        modal.style.display = "none";
+    }
+    span2.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>

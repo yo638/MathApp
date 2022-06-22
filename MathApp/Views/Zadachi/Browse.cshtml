@@ -4,42 +4,43 @@
     ViewData["Title"] = "Browse";
     Layout = "~/Views/Shared/_LayoutIn.cshtml";
 }
+
 <div style="margin-bottom:1.5rem">
-    <table style="margin-top:5rem;width:100%;"><tr>
-    <td><h1>Моите задачи</h1></td>
-    <td  style="text-align:right"><a asp-action="Create" target="_parent"><button class="btn btn-primary">Създай нова задача</button></a></td>
-</tr></table>
+    <table style="margin-top:5rem;width:100%;">
+        <tr>
+            <td><h1>Моите задачи</h1></td>
+            <td style="text-align:right"><a asp-action="Create" target="_parent"><button class="btn btn-primary">Създай нова задача</button></a></td>
+        </tr>
+    </table>
 </div>
 <div class="list-group">
-    
+
     @if (Model != null)
     {
-        @for (var i = 0; i < Model.Count(); i=i+2)
+        @for (var i = 0; i < Model.Count(); i = i + 2)
         {
-            <a asp-action="Edit" asp-route-id="@Model.ElementAt(i).idZadacha" class="list-group-item list-group-item-action flex-column align-items-start active">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">Задача @(i+1)</h5>
-                    <small>@Model.ElementAt(i).timeago</small>
-                </div>
-                <p class="mb-1">@Model.ElementAt(i).uslovie</p>
-                <small>Donec id elit non mi porta.</small>
-            </a>
+        <a asp-action="Edit" asp-route-id="@Model.ElementAt(i).idZadacha" class="list-group-item list-group-item-action flex-column align-items-start active">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Задача @(i+1)</h5>
+                <small>@Model.ElementAt(i).timeago</small>
+            </div>
+            <p class="mb-1">@Model.ElementAt(i).uslovie</p>
+            <small>Donec id elit non mi porta.</small>
+        </a>
+
             @if (i < Model.Count() - 1)
             {
                 <a href="/Zadachi/Edit/@Model.ElementAt(@i + 1).idZadacha" class="list-group-item list-group-item-action flex-column align-items-start">
                     <div class="d-flex w-100 justify-content-between">
                         <h5 class="mb-1">Задача @(i + 2)</h5>
-                        <small>@Model.ElementAt(i+1).timeago</small>
+                        <small>@Model.ElementAt(i + 1).timeago</small>
                     </div>
                     <p class="mb-1">@Model.ElementAt(@i + 1).uslovie</p>
                     <small>Donec id elit non mi porta.</small>
                 </a>
-             }
-         }
+            }
+        }
     }
-
-
-
 
 </div>
 @if (ViewBag.Message != null)

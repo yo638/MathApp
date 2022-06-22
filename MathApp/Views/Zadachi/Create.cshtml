@@ -4,7 +4,10 @@
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_LayoutIn.cshtml";
 }
-<h1 style="margin-top:5rem">Нова задача</h1>
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a href="/Zadachi/Browse">Моите задачи</a> / Нова задача
+</p>
+<h1 style="margin-top:2rem">Нова задача</h1>
 
 <div>
     <hr />
@@ -62,8 +65,8 @@
                 }
                 <tr>
                     <td colspan="2" style="text-align:right">
-                        <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Zadachi/AddAnswer" />
-                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Zadachi/RemoveAnswer" />
+                        <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Zadachi/AddAnswerCreate" />
+                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Zadachi/RemoveAnswerCreate" />
                     </td>
                 </tr>
                 <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
@@ -112,13 +115,15 @@
                 }
                 <tr>
                     <td colspan="2" style="text-align:right">
-                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Zadachi/AddCategory" />
-                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Zadachi/RemoveCategory" />
+                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Zadachi/AddCategoryCreate" />
+                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Zadachi/RemoveCategoryCreate" />
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="text-align:right">
+                    <td style="text-align:left">
                         <input type="submit" class="btn btn-primary" value="Назад" formaction="/Zadachi/Browse" style="margin-top:1.5rem;" />
+                    </td>
+                    <td style="text-align:right">
                         <input type="submit" class="btn btn-primary" value="Запази задачата" formaction="/Zadachi/Create" style="margin-top:1.5rem;" />
                     </td>
                 </tr>
@@ -134,7 +139,3 @@
         ViewData.Clear();
     </script>
 }
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>

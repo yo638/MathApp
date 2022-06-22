@@ -31,7 +31,6 @@
                         <li class="nav-item">
                             <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Browse">
                                 Моите задачи
-                                <span class="visually-hidden">(current)</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -52,6 +51,11 @@
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="RecycleBin" asp-action="Zadachi">
+                                    Кошче
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
                                     Моят Профил
