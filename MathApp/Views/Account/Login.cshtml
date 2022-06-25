@@ -4,41 +4,40 @@
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>Вход</h1>
+<h1 style="margin-top:2rem">Вход</h1>
 
 <div>
     <hr />
     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
     {
-        <dl class="row">
-            <dt class="col-sm-2">
-                Имейл
-            </dt>
-            <dd class="col-sm-10">
-                @Html.TextBoxFor(model => model.email, new { @class = "form-control", Value = "email2@gmail.com" })
-            </dd>
-            <dt class="col-sm-2">
-                Парола
-            </dt>
-            <dd class="col-sm-10">
-                @Html.TextBoxFor(model => model.password, new { @class = "form-control", @type = "password", Value = "111111aA" })
-            </dd>
-            <dt>
-                <input id="submitbtn" type="submit" value="Вход" />
-            </dt>
-        </dl>
+    <table width="90%" align="center">
+        <tr>
+            <td>
+                <label class="form-label mt-4">Имейл</label>
+                @Html.TextBoxFor(model => model.email, new { @class = "form-control", Value = "email2@gmail.com", Placeholder = "Въведете имейл" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="form-label mt-4">Парола</label>
+
+                @Html.TextBoxFor(model => model.password, new { @class = "form-control", @type = "password", Value = "111111aA", Placeholder = "Въведете парола" })
+            </td>
+        </tr>
+        <tr>
+            <td  style="text-align:right">
+                <input type="submit" id="submitbtn" class="btn btn-primary" value="Вход" style="margin-top:2rem" />
+            </td>
+        </tr>
+    </table>
     }
 </div>
 
-@if (ViewBag.Message != null)
-{
-    <script>
+    @if (ViewBag.Message != null)
+    {
+        <script>
         toastr["@ViewBag.MessageType"]("@ViewBag.Message");
         ViewData.Clear();
-    </script>
-}
+        </script>
+    }
 
-<div>
-    @Html.ActionLink("Register", "Register") |
-    <a asp-action="Register">Back to List</a>
-</div>

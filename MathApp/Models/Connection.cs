@@ -482,5 +482,64 @@ namespace MathApp.Models
                 return false;
             }
         }
+        public IEnumerable<Zadacha> searchZadachi(int userID, SearchCriteriaZadacha criteria)
+        {
+            List<Zadacha> zadachi = new List<Zadacha>();
+            try
+            {
+                using (myconnection)
+                {
+                    string command = "SELECT DISTINCT z.id_zadacha, z.uslovie, z.update_date FROM math_app.zadachi z "+
+                        "LEFT JOIN math_app.junction_zadachi_answers jza ON z.id_zadacha = jza.zadacha "+
+                        "LEFT JOIN math_app.answers a ON jza.answer = a.id_answer "+
+                        "LEFT JOIN math_app.junction_zadachi_categories jzc ON z.id_zadacha = jzc.zadacha "+
+                        "LEFT JOIN math_app.categories c ON jzc.category = c.id_category "+
+                        "WHERE z.`user`= '"+userID+"' AND z.`status`= 'saved'";
+                    if (!string.IsNullOrEmpty(criteria.uslovie)) command += " AND z.`uslovie` LIKE '%"+criteria.uslovie+"%'";
+                    if (!string.IsNullOrEmpty(criteria.solution)) command += " AND z.`solution` LIKE '%"+criteria.solution+"%'";
+                    if (!string.IsNullOrEmpty(criteria.answer)) command += " AND a.`answer` LIKE '%"+criteria.answer+"%'";
+                    if (!string.IsNullOrEmpty(criteria.anywhere)) command += " AND (z.`uslovie` LIKE '%"+criteria.anywhere+"%' OR z.`solution` LIKE '%"+criteria.anywhere+"%' OR a.`answer` LIKE '%"+criteria.anywhere+"%')";
+                    if (!string.IsNullOrEmpty(criteria.fromDate)) command += " AND z.creation_date>='" + criteria.fromDate + "'";
+                    if (!string.IsNullOrEmpty(criteria.toDate)) command += " AND z.creation_date<='" + criteria.toDate + " 23:59:59'";
+                    if (criteria.category.grade!=0) command += " AND c.grade='"+ criteria.category.grade + "'";
+                    if (criteria.category.difficulty!="X") command += " AND c.difficulty='"+criteria.category.difficulty+"'";
+                    command += ";";
+
+                    command += " ORDER BY `update_date` DESC;";
+                    myconnection.Open();
+                    mycommand = new MySqlCommand(command, myconnection);
+                    MySqlDataReader reader = mycommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        zadachi.Add(new Zadacha(
+                            Convert.ToInt32(reader["id_zadacha"].ToString()),
+                            reader["uslovie"].ToString(),
+                            reader["update_date"].ToString()));
+                    }
+                    reader.Close();
+                    int time = 0;
+                    DateTime nowdate = DateTime.Now;
+                    for (int i = 0; i < zadachi.Count; i++)
+                    {
+                        DateTime update = DateTime.Parse(zadachi[i].updateDate);
+                        time = (nowdate.Date - update.Date).Days;
+
+                        if (time == 0) zadachi[i].timeago = "today";
+                        else if (time == 1) zadachi[i].timeago = "yesterday";
+                        else if (time < 7) zadachi[i].timeago = time.ToString() + " days ago";
+                        else if (time < 30) { time = time / 7; zadachi[i].timeago = time.ToString() + " weeks ago"; }
+                        else if (time < 365) { time = time / 30; zadachi[i].timeago = time.ToString() + " months ago"; }
+                        else { time = time / 365; zadachi[i].timeago = time.ToString() + " years ago"; }
+
+                    }
+                    return zadachi;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return zadachi;
+            }
+        }
     }
 }

@@ -166,7 +166,10 @@ namespace MathApp.Controllers
                 ViewBag.Message = string.Format((string)TempData["Message"]);
             }
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            return View(connection.getZadachiByUser(user.idUser));
+            SearchZadachi model = new SearchZadachi();
+            model.criteria = new SearchCriteriaZadacha();
+            model.zadachi = connection.getZadachiByUser(user.idUser);
+            return View(model);
         }
         public IActionResult AddToRecycleBin(int id)
         {
@@ -182,6 +185,12 @@ namespace MathApp.Controllers
             }
             return RedirectToAction("Browse", "Zadachi");
         }
-
+        [HttpPost]
+        public IActionResult Search(SearchZadachi model)
+        {
+            User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
+            model.zadachi = connection.searchZadachi(user.idUser, model.criteria);
+            return View("Browse", model);
+        }
     }
 }
