@@ -11,6 +11,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-1.2.6.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-ui-personalized-1.6rc4.min.js") %>"></script>
     <script>
         $('html').on('click', function () {
             parent.$('#frame').trigger('click');
@@ -34,7 +36,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
+                            <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="Browse">
                                 Теми
                             </a>
                         </li>

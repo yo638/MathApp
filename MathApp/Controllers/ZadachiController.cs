@@ -31,9 +31,9 @@ namespace MathApp.Controllers
                 zadacha.updateDate = zadacha.creationDate;
                 if(connection.createZadacha(zadacha))
                 {
-                    ViewBag.MessageType = string.Format("success");
-                    ViewBag.Message = string.Format("Задачата беше създадена.");
-                    return View("Browse", connection.getZadachiByUser(user.idUser));
+                    TempData["MessageType"] = "success";
+                    TempData["Message"] = "Задачата беше създадена.";
+                    return RedirectToAction("Browse", "Zadachi");
                 }
                 else
                 {

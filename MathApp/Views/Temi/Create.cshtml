@@ -1,0 +1,426 @@
+﻿@model MathApp.Models.Tema
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<style>
+    .dragme{
+        cursor: move;
+    }
+</style>
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a href="/Zadachi/Browse">Моите теми</a> / Нова тема
+</p>
+<h1 style="margin-top:2rem">Нова тема</h1>
+
+<hr />
+<form method="post">
+    <fieldset>
+        <table style="width:100%;">
+            <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Заглавие</legend></td></tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <input type="text" name="temaName" class="form-control" id="temaName" value="@Model.temaName">
+                    </div>
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Описание</legend></td></tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <textarea name="description" class="form-control" id="description" rows="6">@Model.description</textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <legend for="eventDate" style="margin-bottom:0;" class="mt-4">Дата на провеждане</legend>
+                    <input type="date" class="form-control" name="eventDate" value="@Model.eventDate" id="eventDate" style="width:40%" />
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend style="margin-bottom:0;" class="mt-4">Степени на сложност</legend></td></tr>
+            @if (Model.categories != null)
+            {
+                @for (var i = 0; i < Model.categories.Count(); i++)
+                {
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label for="categories[@i].grade" class="form-label mt-4">Клас</label>
+                                <select name="categories[@i].grade" value="@Model.categories[i].grade" class="form-select" id="categories[@i].grade">
+                                    <option value="0">Всички</option>
+                                    <option value="1">1 клас</option>
+                                    <option value="2">2 клас</option>
+                                    <option value="3">3 клас</option>
+                                    <option value="4">4 клас</option>
+                                    <option value="5">5 клас</option>
+                                    <option value="6">6 клас</option>
+                                    <option value="7">7 клас</option>
+                                    <option value="8">8 клас</option>
+                                    <option value="9">9 клас</option>
+                                    <option value="10">10 клас</option>
+                                    <option value="11">11 клас</option>
+                                    <option value="12">12 клас</option>
+                                </select>
+                                <script>document.getElementById("categories[@i].grade").selectedIndex = @(Model.categories[i].grade);</script>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="categories[@i].difficulty" class="form-label mt-4">Ниво</label>
+                                <select name="categories[@i].difficulty" value="@Model.categories[i].difficulty" class="form-select" id="categories[@i].difficulty">
+                                    <option value="X">Всички</option>
+                                    <option value="A">А (задачи за всички ученици)</option>
+                                    <option value="B">В (задачи за отлична подготовка)</option>
+                                    <option value="C">С (задачи за състезания)</option>
+                                </select>
+                                <script>
+                                        if ("@Model.categories[i].difficulty" == "A") document.getElementById("categories[@i].difficulty").selectedIndex = 1;
+                                        else if ("@Model.categories[i].difficulty" == "B") document.getElementById("categories[@i].difficulty").selectedIndex = 2;
+                                        else if ("@Model.categories[i].difficulty" == "C") document.getElementById("categories[@i].difficulty").selectedIndex = 3;
+                                        else document.getElementById("categories[@i].difficulty").selectedIndex = 0;
+                                </script>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            <tr>
+                <td colspan="2" style="text-align: right;">
+                    <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Temi/AddCategoryToTemaCreate" />
+                    <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Temi/RemoveCategoryFromTemaCreate" />
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend style="margin-bottom:0;" class="mt-4">Задачи</legend></td></tr>
+            @if (Model != null && Model.zadachi.Count() > 1)
+            {
+                <tr>
+                    <td colspan="2">
+                        @for (var i = 0; i < Model.zadachi.Count() - 1; i = i + 2)
+                        {
+                            <div class="list-group-item list-group-item-action flex-column align-items-start active">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">Задача @(i+1)</h5>
+                                    <small>
+                                        <input type="checkbox" name="zadachi[@i].deletionStatus" value="@Model.zadachi.ElementAt(@i).deletionStatus" id="zadachi[@i].deletionStatus" class="form-check-input" autocomplete="off" />
+                                    </small>
+                                </div>
+                                <div class="dragme" draggable="true" id="items">
+                                    <p class="mb-1">@Model.zadachi.ElementAt(i).uslovie</p>
+                                    <small>@Model.zadachi.ElementAt(i).solution</small>
+                                    <input type="hidden" name="zadachi[@i].idZadacha" value="@i" id="zadachi[@i].idZadacha" />
+                                </div>
+                            </div>
+                            <input type="hidden" name="zadachi[@i].uslovie" value="@Model.zadachi.ElementAt(@i).uslovie" />
+                            <input type="hidden" name="zadachi[@i].solution" value="@Model.zadachi.ElementAt(@i).solution" />
+                            <input type="hidden" name="zadachi[@i].user" value="@Model.zadachi.ElementAt(@i).user" />
+                            <input type="hidden" name="zadachi[@i].creationDate" value="@Model.zadachi.ElementAt(@i).creationDate" />
+                            <input type="hidden" name="zadachi[@i].updateDate" value="@Model.zadachi.ElementAt(@i).updateDate" />
+                            @if (Model.zadachi[i].answers != null)
+                            {
+                                @for (var j = 0; j < Model.zadachi[i].answers.Count(); j++)
+                                {
+                                    <input type="hidden" name="zadachi[@i].answers[@j].answer" value="@Model.zadachi.ElementAt(@i).answers.ElementAt(@j).answer" />
+                                    <input type="hidden" name="zadachi[@i].answers[@j].validity" value="@Model.zadachi.ElementAt(@i).answers.ElementAt(@j).validity.ToString()" />
+                                }
+                            }
+                            @if (Model.zadachi[i].categories != null)
+                            {
+                                @for (var j = 0; j < Model.zadachi[i].categories.Count(); j++)
+                                {
+                                    <input type="hidden" name="zadachi[@i].categories[@j].grade" value="@Model.zadachi.ElementAt(@i).categories.ElementAt(@j).grade" />
+                                    <input type="hidden" name="zadachi[@i].categories[@j].difficulty" value="@Model.zadachi.ElementAt(@i).categories.ElementAt(@j).difficulty" />
+                                }
+                            }
+                            @if (i < Model.zadachi.Count() - 2)
+                            {
+                                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">Задача @(i + 2)</h5>
+
+                                        <small>
+                                            <input type="checkbox" name="zadachi[@(i+1)].deletionStatus" value="@Model.zadachi.ElementAt(@i+1).deletionStatus" id="zadachi[@(i+1)].deletionStatus" class="form-check-input" autocomplete="off" />
+                                        </small>
+                                    </div>
+                                    <div class="dragme" draggable="true" id="items">
+                                        <p class="mb-1">@Model.zadachi.ElementAt(@i + 1).uslovie</p>
+                                        <small>@Model.zadachi.ElementAt(@i + 1).solution</small>
+                                        <input type="hidden" name="zadachi[@(i+1)].idZadacha" value="@(i+1)" id="zadachi[@(i+1)].idZadacha" />
+                                    </div>
+                                </div>
+                                <input type="hidden" name="zadachi[@(i+1)].uslovie" value="@Model.zadachi.ElementAt(@i+1).uslovie" />
+                                <input type="hidden" name="zadachi[@(i+1)].solution" value="@Model.zadachi.ElementAt(@i+1).solution" />
+                                <input type="hidden" name="zadachi[@(i+1)].user" value="@Model.zadachi.ElementAt(@i+1).user" />
+                                <input type="hidden" name="zadachi[@(i+1)].creationDate" value="@Model.zadachi.ElementAt(@i+1).creationDate" />
+                                <input type="hidden" name="zadachi[@(i+1)].updateDate" value="@Model.zadachi.ElementAt(@i+1).updateDate" />
+                                @if (Model.zadachi[i].answers != null)
+                                {
+                                    @for (var j = 0; j < Model.zadachi[i + 1].answers.Count(); j++)
+                                    {
+                                        <input type="hidden" name="zadachi[@(i+1)].answers[@j].answer" value="@Model.zadachi.ElementAt(@i+1).answers.ElementAt(@j).answer" />
+                                        <input type="hidden" name="zadachi[@(i+1)].answers[@j].validity" value="@Model.zadachi.ElementAt(@i+1).answers.ElementAt(@j).validity.ToString()" />
+                                    }
+                                }
+                                @if (Model.zadachi[i].categories != null)
+                                {
+                                    @for (var j = 0; j < Model.zadachi[i + 1].categories.Count(); j++)
+                                    {
+                                        <input type="hidden" name="zadachi[@(i+1)].categories[@j].grade" value="@Model.zadachi.ElementAt(@i+1).categories.ElementAt(@j).grade" />
+                                        <input type="hidden" name="zadachi[@(i+1)].categories[@j].difficulty" value="@Model.zadachi.ElementAt(@i+1).categories.ElementAt(@j).difficulty" />
+                                    }
+                                }
+                            }
+                        }
+                    </td>
+                        </tr>
+                    }
+            <tr>
+                <td colspan="2" style="text-align:right">
+                    <button type="submit" formaction="/Temi/RemoveZadacha" class="btn btn-danger" style="margin-top: 1.5rem" id="deleteZadachi">Изтрии задачи</button>
+                    <button type="button" id="btncreatezadacha" class="btn btn-primary" style="margin-top: 1.5rem;">Добави задача</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="text-align:left">
+                    <input type="submit" class="btn btn-primary" value="Назад" formaction="/Zadachi/Browse" style="margin-top:1.5rem;" />
+                </td>
+                <td style="text-align:right">
+                    <input type="submit" class="btn btn-primary" value="Запази темата" formaction="/Temi/Create" style="margin-top:1.5rem;" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <!-----------------------------------------------------------------CREATE ZADACHA------------------------------------------------------------>
+    <div class="modal" id="modalCreateZadacha">
+        <div class="modal-dialog" role="document" style="max-width: 1000px; backdrop-filter: drop-shadow(4px 4px 10px blue)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Създай задача</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <input type="hidden" name="zadachi[@(Model.zadachi.Count()-1)].creationDate" value="@Model.zadachi.ElementAt(Model.zadachi.Count()-1).creationDate" />
+                <input type="hidden" name="zadachi[@(Model.zadachi.Count()-1)].updateDate" value="@Model.zadachi.ElementAt(Model.zadachi.Count()-1).updateDate" />
+                <input type="hidden" name="zadachi[@(Model.zadachi.Count()-1)].user" value="@Model.zadachi.ElementAt(Model.zadachi.Count()-1).user" />
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Условие</legend>
+                                <textarea name="zadachi[@(Model.zadachi.Count()-1)].uslovie" class="form-control" id="uslovieTextArea" rows="6">@Model.zadachi[Model.zadachi.Count()-1].uslovie</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Решение</legend>
+                                <textarea name="zadachi[@(Model.zadachi.Count()-1)].solution" class="form-control" id="solutionTextArea" rows="6">@Model.zadachi[Model.zadachi.Count()-1].solution</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Отговори</legend></td></tr>
+                    @if (Model.zadachi[Model.zadachi.Count() - 1].answers != null)
+                    {
+                        var idZad = Model.zadachi.Count() - 1;
+                        @for (var a = 0; a < Model.zadachi[idZad].answers.Count(); a++)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="modal-body">
+                                        <label for="answers[a].answer" class="form-label mt-4">Отговор @(a+1)</label>
+                                        <input type="text" name="zadachi[@idZad].answers[@a].answer" value="@Model.zadachi[@idZad].answers[@a].answer" class="form-control" id="zadachi[@idZad].answers[@a].answer" aria-describedby="emailHelp" placeholder="Въведете отговор">
+                                    </div>
+                                </td>
+                                <td class="modal-body">
+                                    <fieldset class="modal-body" style="margin-left:40px;margin-top:40px;">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="zadachi[@idZad].answers[@a].validity" id="zadachi[@idZad].answers[@a].validitytrue" value="true">
+                                                Верен
+                                            </label>
+                                            <script>if("@Model.zadachi[idZad].answers[a].validity"=="True")document.getElementById("zadachi[@idZad].answers[@a].validitytrue").checked = true;</script>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="zadachi[@idZad].answers[@a].validity" id="zadachi[@idZad].answers[@a].validityfalse" value="false">
+                                                Грешен
+                                            </label>
+                                            <script>if("@Model.zadachi[idZad].answers[a].validity"!="True")document.getElementById("zadachi[@idZad].answers[@a].validityfalse").checked = true;</script>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Temi/AddAnswerCreate" />
+                            <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Temi/RemoveAnswerCreate" />
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
+                    @if (Model.zadachi[Model.zadachi.Count() - 1].categories != null)
+                    {
+                        var idZad = Model.zadachi.Count() - 1;
+                        @for (var i = 0; i < Model.zadachi[idZad].categories.Count(); i++)
+                        {
+                            <tr>
+                                <td class="modal-body">
+                                    <div class="form-group">
+                                        <label for="categories[@i].grade" class="form-label mt-4">Клас</label>
+                                        <select name="zadachi[@idZad].categories[@i].grade" value="@Model.zadachi[idZad].categories[i].grade" class="form-select" id="zadachi[@idZad].categories[@i].grade">
+                                            <option value="1">1 клас</option>
+                                            <option value="2">2 клас</option>
+                                            <option value="3">3 клас</option>
+                                            <option value="4">4 клас</option>
+                                            <option value="5">5 клас</option>
+                                            <option value="6">6 клас</option>
+                                            <option value="7">7 клас</option>
+                                            <option value="8">8 клас</option>
+                                            <option value="9">9 клас</option>
+                                            <option value="10">10 клас</option>
+                                            <option value="11">11 клас</option>
+                                            <option value="12">12 клас</option>
+                                        </select>
+                                        <script>document.getElementById("zadachi[@idZad].categories[@i].grade").selectedIndex = @(Model.zadachi[idZad].categories[i].grade - 1);</script>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label for="zadachi[@idZad].categories[@i].difficulty" class="form-label mt-4">Ниво</label>
+                                        <select name="zadachi[@idZad].categories[@i].difficulty" value="@Model.zadachi[idZad].categories[i].difficulty" class="form-select" id="zadachi[@idZad].categories[@i].difficulty">
+                                            <option value="A">А (задачи за всички ученици)</option>
+                                            <option value="B">В (задачи за отлична подготовка)</option>
+                                            <option value="C">С (задачи за състезания)</option>
+                                        </select>
+                                        <script>
+                                        if ("@Model.zadachi[idZad].categories[i].difficulty" == "A") document.getElementById("zadachi[@idZad].categories[@i].difficulty").selectedIndex = 0;
+                                        else if ("@Model.zadachi[idZad].categories[i].difficulty" == "B") document.getElementById("zadachi[@idZad].categories[@i].difficulty").selectedIndex = 1;
+                                        else document.getElementById("zadachi[@idZad].categories[@i].difficulty").selectedIndex = 2;
+                                        </script>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Temi/AddCategoryCreate" />
+                            <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Temi/RemoveCategoryCreate" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Запази задачата" formaction="/Temi/AddZadacha/" />
+                    <button type="button" id="closemodal" class="btn btn-primary" data-bs-dismiss="modal">Отказ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+</div>
+
+<script>
+    var modal = document.getElementById("modalCreateZadacha");
+    var btn = document.getElementById("btncreatezadacha");
+    var span1 = document.getElementsByClassName("btn-close")[0];
+    var span2 = document.getElementById("closemodal");
+
+    modal.style.display = "@ViewBag.ModalVisibility";
+
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    span1.onclick = function () {
+        modal.style.display = "none";
+    }
+    span2.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    /*$(function () {
+        $("#items").sortable({ axis: "y" });
+    });*/
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+        function handleDragStart(e) {
+            this.style.opacity = '0.4';
+            dragSrcEl = this;
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+
+
+            items.forEach(function (item) {
+                item.classList.remove('over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation(); // stops the browser from redirecting.
+
+            if (dragSrcEl !== this) {
+                dragSrcEl.innerHTML = this.innerHTML;
+                this.innerHTML = e.dataTransfer.getData('text/html');
+            }
+            return false;
+        }
+
+        let items = document.querySelectorAll('.dragme');
+        items.forEach(function (item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('drop', handleDrop);
+        });
+    });
+</script>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewBag.Clear();
+    </script>
+}
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

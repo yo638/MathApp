@@ -21,36 +21,7 @@ namespace MathApp.Models
         {
             ConnectionTo();
         }
-        public List<Answer> getAnswer()
-        {
-            List<Answer> answers = new List<Answer>();
-            try
-            {
-                using (myconnection)
-                {
-                    myconnection.Open();
-                    mycommand = new MySqlCommand("select * from answers", myconnection);
-                    MySqlDataReader reader = mycommand.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        //Extract you data
-                        Answer answer = new Answer();
-                        //answer.SetIdAnswer(Convert.ToInt32(reader["id_answer"]));
-                        answer.idAnswer = Convert.ToInt32(reader["id_answer"].ToString());
-                        answer.answer = reader["answer"].ToString();
-                        //HttpContext.Session.SetString("AnswerSessionKey", JsonConvert.SerializeObject(answer));
-                        answers.Add(answer);
-                    }
-                    reader.Close();
-                }
-                return answers;
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return answers;
-            }
-        }
+       
         public bool RegisterUser(User u)
         {
             try
@@ -58,7 +29,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     int count = Convert.ToInt32(mycommand.ExecuteScalar());
@@ -91,7 +65,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT * FROM math_app.users WHERE email='" + email + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -121,7 +98,10 @@ namespace MathApp.Models
                 {
                     string realpassword = "";
                     string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     int count = Convert.ToInt32(mycommand.ExecuteScalar());
                     if (count > 0)
@@ -153,8 +133,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     int answerID = 0, categoryID = 0;
-                    string command = "INSERT INTO `math_app`.`zadachi` ( `uslovie`, `solution`, `creation_date`, `update_date`, `user`, `status`) VALUES ('" + zadacha.uslovie + "','" + zadacha.solution + "','" + zadacha.creationDate + "','" + zadacha.updateDate + "','" + zadacha.user + "','" + zadacha.deletionStatus + "');";
-                    myconnection.Open();
+                    string command = "INSERT IGNORE INTO `math_app`.`zadachi` ( `uslovie`, `solution`, `creation_date`, `update_date`, `user`, `status`) VALUES ('" + zadacha.uslovie + "','" + zadacha.solution + "','" + zadacha.creationDate + "','" + zadacha.updateDate + "','" + zadacha.user + "','saved');";
+                    if (myconnection.State.ToString() != "Open") {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
 
@@ -175,15 +157,14 @@ namespace MathApp.Models
                             mycommand = new MySqlCommand(command, myconnection);
                             mycommand.ExecuteNonQuery();
                             command = "SELECT `id_answer` FROM `math_app`.`answers` WHERE `answer`='" + zadacha.answers[i].answer + "' AND `validity`='" + Convert.ToInt32(zadacha.answers[i].validity) + "';";
-                            myconnection.Open();
                             mycommand = new MySqlCommand(command, myconnection);
                             MySqlDataReader readerA = mycommand.ExecuteReader();
                             while (readerA.Read())
                             {
-                                answerID = Convert.ToInt32(readerA["id_answer"].ToString());
+                                zadacha.answers[i].idAnswer = Convert.ToInt32(readerA["id_answer"].ToString());
                             }
                             readerA.Close();
-                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_answers` ( `zadacha`, `answer`) VALUES ('" + zadacha.idZadacha + "','" + answerID + "');";
+                            command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_answers` ( `zadacha`, `answer`) VALUES ('" + zadacha.idZadacha + "','" + zadacha.answers[i].idAnswer + "');";
                             mycommand = new MySqlCommand(command, myconnection);
                             mycommand.ExecuteNonQuery();
                         }
@@ -194,12 +175,11 @@ namespace MathApp.Models
                         for (int i = 0; i < zadacha.categories.Count; i++)
                         {
                             command = "SELECT `id_category` FROM `math_app`.`categories` WHERE `grade`='" + zadacha.categories[i].grade + "' AND `difficulty`='" + zadacha.categories[i].difficulty + "';";
-                            myconnection.Open();
                             mycommand = new MySqlCommand(command, myconnection);
                             MySqlDataReader readerC = mycommand.ExecuteReader();
                             while (readerC.Read())
                             {
-                                categoryID = Convert.ToInt32(readerC["id_category"].ToString());
+                                zadacha.categories[i].idCategory = Convert.ToInt32(readerC["id_category"].ToString());
                             }
                             readerC.Close();
 
@@ -228,7 +208,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT `id_zadacha`,`uslovie`,`update_date` FROM `math_app`.`zadachi` WHERE `user`='" + userID + "' AND `status`='saved' ORDER BY `update_date` DESC;";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -271,7 +254,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT `id_zadacha`,`uslovie`,`update_date` FROM `math_app`.`zadachi` WHERE `user`='" + userID + "' AND `status`='recyclebin' ORDER BY `update_date` DESC;";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -316,7 +302,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT * FROM `math_app`.`zadachi` WHERE `id_zadacha`='" + zadachaID + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader readerZadacha = mycommand.ExecuteReader();
                     while (readerZadacha.Read())
@@ -366,7 +355,10 @@ namespace MathApp.Models
                 {
                     int answerID = 0, categoryID=0;
                     string command = "UPDATE `math_app`.`zadachi` SET `uslovie`='"+zadacha.uslovie+"', `solution`='"+zadacha.solution+"', `update_date`='"+zadacha.updateDate+"' WHERE `id_zadacha`='"+zadacha.idZadacha+"';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
 
@@ -432,7 +424,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "UPDATE `math_app`.`zadachi` SET `status`='recyclebin' WHERE `id_zadacha`='" + zadachaID + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -451,7 +446,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "UPDATE `math_app`.`zadachi` SET `status`='saved' WHERE `id_zadacha`='" + zadachaID + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -470,7 +468,10 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "DELETE FROM `math_app`.`zadachi` WHERE `id_zadacha`='" + zadachaID + "';";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -506,7 +507,10 @@ namespace MathApp.Models
                     command += ";";
 
                     command += " ORDER BY `update_date` DESC;";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -541,5 +545,129 @@ namespace MathApp.Models
                 return zadachi;
             }
         }
+        public bool createTema(Tema tema)
+        {
+            try
+            {
+                using (myconnection)
+                {
+                    string command = "";
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
+                    command = "INSERT IGNORE INTO `math_app`.`temi` (`tema`,`description`,`type`,`creation_date`,`update_date`,`event_date`,`user`,`deletionstatus`) " +
+                     "VALUES ('" + tema.temaName + "','" + tema.description + "','tema','" + tema.creationDate + "','" + tema.updateDate + "','" + tema.creationDate + "','" + tema.user + "','saved');";
+                    mycommand = new MySqlCommand(command, myconnection);
+                    mycommand.ExecuteNonQuery();
+
+                    command = "SELECT * FROM math_app.temi WHERE tema='" + tema.temaName + "' AND creation_date='" + tema.creationDate + "';";
+                    mycommand = new MySqlCommand(command, myconnection);
+                    MySqlDataReader readerT = mycommand.ExecuteReader();
+                    while (readerT.Read())
+                    {
+                        tema.id = (Convert.ToInt32(readerT["id_tema"].ToString()));
+                    }
+                    readerT.Close();
+
+                    if (tema.zadachi.Count > 0)
+                    {
+                        for (int i = 0; i < tema.zadachi.Count(); i++)
+                        {
+                            if (!string.IsNullOrEmpty(tema.zadachi[i].uslovie))
+                            {
+                                createZadacha(tema.zadachi[i]);
+                                if(myconnection.State.ToString()!="Open") myconnection.Open();
+                                command = "SELECT `id_zadacha` FROM math_app.zadachi WHERE uslovie='" + tema.zadachi[i].uslovie + "' AND creation_date='" + tema.zadachi[i].creationDate + "';";
+                                mycommand = new MySqlCommand(command, myconnection);
+                                MySqlDataReader readerZ2 = mycommand.ExecuteReader();
+                                int a = 0;
+                                while (readerZ2.Read())
+                                {
+                                    tema.zadachi[i].idZadacha = (Convert.ToInt32(readerZ2["id_zadacha"].ToString()));
+                                }
+                                readerZ2.Close();
+
+                                command = "INSERT IGNORE INTO `math_app`.`junction_zadachi_temi` ( `zadacha`, `tema`) VALUES ('" + tema.zadachi[i].idZadacha + "','" + tema.id + "');";
+                                mycommand = new MySqlCommand(command, myconnection);
+                                mycommand.ExecuteNonQuery();
+                            }
+
+                        }
+                    }
+                    if (tema.categories.Count > 0)
+                    {
+                        for (int i = 0; i < tema.categories.Count; i++)
+                        {
+                            command = "SELECT `id_category` FROM `math_app`.`categories` WHERE `grade`='" + tema.categories[i].grade + "' AND `difficulty`='" + tema.categories[i].difficulty + "';";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            MySqlDataReader readerC = mycommand.ExecuteReader();
+                            while (readerC.Read())
+                            {
+                                tema.categories[i].idCategory = Convert.ToInt32(readerC["id_category"].ToString());
+                            }
+                            readerC.Close();
+
+                            command = "INSERT IGNORE INTO `math_app`.`junction_temi_categories` ( `tema`, `category`) VALUES ('" + tema.id + "','" + tema.categories[i].idCategory + "');";
+                            mycommand = new MySqlCommand(command, myconnection);
+                            mycommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public IEnumerable<Tema> getTemiByUser(int userID)
+        {
+            List<Tema> temi = new List<Tema>();
+            try
+            {
+                using (myconnection)
+                {
+                    string command = "SELECT `id_tema`,`tema`,`description`,`update_date` FROM `math_app`.`temi` WHERE `user`='" + userID + "' AND `deletionstatus`='saved' ORDER BY `update_date` DESC;";
+                    myconnection.Open();
+                    mycommand = new MySqlCommand(command, myconnection);
+                    MySqlDataReader reader = mycommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        temi.Add(new Tema(
+                            Convert.ToInt32(reader["id_tema"].ToString()),
+                            reader["tema"].ToString(),
+                            reader["description"].ToString(),
+                            reader["update_date"].ToString()));
+                    }
+                    reader.Close();
+                    int time = 0;
+                    DateTime nowdate = DateTime.Now;
+                    for (int i = 0; i < temi.Count; i++)
+                    {
+                        DateTime update = DateTime.Parse(temi[i].updateDate);
+                        time = (nowdate.Date - update.Date).Days;
+
+                        if (time == 0) temi[i].timeago = "today";
+                        else if (time == 1) temi[i].timeago = "yesterday";
+                        else if (time < 7) temi[i].timeago = time.ToString() + " days ago";
+                        else if (time < 30) { time = time / 7; temi[i].timeago = time.ToString() + " weeks ago"; }
+                        else if (time < 365) { time = time / 30; temi[i].timeago = time.ToString() + " months ago"; }
+                        else { time = time / 365; temi[i].timeago = time.ToString() + " years ago"; }
+
+                    }
+                    return temi;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return temi;
+            }
+        }
+
     }
 }

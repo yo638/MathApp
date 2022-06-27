@@ -16,7 +16,6 @@ namespace MathApp.Models
         [BindProperty]
         public List<Answer> answers { get; set; }
         public string solution { get; set; }
-        //public IFormFile[] ImagesSolution { get; set; }
         public List<Category> categories { get; set; }
         public string creationDate { get; set; }
         public string updateDate { get; set; }
@@ -33,6 +32,12 @@ namespace MathApp.Models
         {
             this.idZadacha = idZadacha;
             this.uslovie = uslovie;
+            this.updateDate = updateDate;
+        }
+        public Zadacha(int idZadacha, int user, string creationDate, string updateDate) {
+            this.idZadacha = idZadacha;
+            this.user = user;
+            this.creationDate = creationDate;
             this.updateDate = updateDate;
         }
     }
