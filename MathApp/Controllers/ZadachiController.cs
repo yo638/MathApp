@@ -50,7 +50,7 @@ namespace MathApp.Controllers
             }
         }
         [HttpPost]
-        public IActionResult AddAnswerCreate( Zadacha zadacha)
+        public IActionResult AddAnswerCreate(Zadacha zadacha)
         {
             zadacha.answers.Add(new Answer("Отговор",true));
             return View("Create",zadacha);

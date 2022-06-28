@@ -24,10 +24,6 @@ namespace MathApp.Controllers
         Connection connection = new Connection();
         public IActionResult Login()
         {
-            //User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-
-            //Get session info
-            //var answer = JsonConvert.DeserializeObject<Answer>(HttpContext.Session.GetString("AnswerSessionKey"));
             return View();
         }
         [HttpPost]
@@ -137,7 +133,7 @@ namespace MathApp.Controllers
         }
         public IActionResult Logout()
         {
-            //remove the user from the session
+            HttpContext.Session.Clear();
             return View();
         }
 

@@ -125,7 +125,6 @@ namespace MathApp.Models
             }
         }
 
-        //ZADACHI
         public bool createZadacha(Zadacha zadacha)
         {
             try
@@ -504,7 +503,6 @@ namespace MathApp.Models
                     if (!string.IsNullOrEmpty(criteria.toDate)) command += " AND z.creation_date<='" + criteria.toDate + " 23:59:59'";
                     if (criteria.category.grade!=0) command += " AND c.grade='"+ criteria.category.grade + "'";
                     if (criteria.category.difficulty!="X") command += " AND c.difficulty='"+criteria.category.difficulty+"'";
-                    command += ";";
 
                     command += " ORDER BY `update_date` DESC;";
                     if (myconnection.State.ToString() != "Open")
@@ -633,6 +631,65 @@ namespace MathApp.Models
                 {
                     string command = "SELECT `id_tema`,`tema`,`description`,`update_date` FROM `math_app`.`temi` WHERE `user`='" + userID + "' AND `deletionstatus`='saved' ORDER BY `update_date` DESC;";
                     myconnection.Open();
+                    mycommand = new MySqlCommand(command, myconnection);
+                    MySqlDataReader reader = mycommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        temi.Add(new Tema(
+                            Convert.ToInt32(reader["id_tema"].ToString()),
+                            reader["tema"].ToString(),
+                            reader["description"].ToString(),
+                            reader["update_date"].ToString()));
+                    }
+                    reader.Close();
+                    int time = 0;
+                    DateTime nowdate = DateTime.Now;
+                    for (int i = 0; i < temi.Count; i++)
+                    {
+                        DateTime update = DateTime.Parse(temi[i].updateDate);
+                        time = (nowdate.Date - update.Date).Days;
+
+                        if (time == 0) temi[i].timeago = "today";
+                        else if (time == 1) temi[i].timeago = "yesterday";
+                        else if (time < 7) temi[i].timeago = time.ToString() + " days ago";
+                        else if (time < 30) { time = time / 7; temi[i].timeago = time.ToString() + " weeks ago"; }
+                        else if (time < 365) { time = time / 30; temi[i].timeago = time.ToString() + " months ago"; }
+                        else { time = time / 365; temi[i].timeago = time.ToString() + " years ago"; }
+
+                    }
+                    return temi;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return temi;
+            }
+        }
+        public IEnumerable<Tema> searchTemi(int userID, SearchCriteriaTema criteria)
+        {
+            List<Tema> temi = new List<Tema>();
+            try
+            {
+                using (myconnection)
+                {
+                    string command = "SELECT DISTINCT t.id_tema, t.tema, t.description, t.update_date FROM math_app.temi t " +
+                        "LEFT JOIN math_app.junction_temi_categories jtc ON t.id_tema = jtc.tema " +
+                        "LEFT JOIN math_app.categories c ON jtc.category = c.id_category " +
+                        "WHERE t.`user`= '" + userID + "' AND t.`deletionstatus`= 'saved'";
+                    if (!string.IsNullOrEmpty(criteria.name)) command += " AND t.`tema` LIKE '%" + criteria.name + "%'";
+                    if (!string.IsNullOrEmpty(criteria.description)) command += " AND t.`description` LIKE '%" + criteria.description + "%'";
+                    if (!string.IsNullOrEmpty(criteria.anywhere)) command += " AND (t.`tema` LIKE '%" + criteria.anywhere + "%' OR t.`description` LIKE '%" + criteria.anywhere + "%')";
+                    if (!string.IsNullOrEmpty(criteria.fromDate)) command += " AND t.creation_date>='" + criteria.fromDate + "'";
+                    if (!string.IsNullOrEmpty(criteria.toDate)) command += " AND t.creation_date<='" + criteria.toDate + " 23:59:59'";
+                    if (criteria.category.grade != 0) command += " AND c.grade='" + criteria.category.grade + "'";
+                    if (criteria.category.difficulty != "X") command += " AND c.difficulty='" + criteria.category.difficulty + "'";
+
+                    command += " ORDER BY `update_date` DESC;";
+                    if (myconnection.State.ToString() != "Open")
+                    {
+                        myconnection.Open();
+                    }
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())

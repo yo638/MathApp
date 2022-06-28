@@ -157,5 +157,12 @@ namespace MathApp.Controllers
             model.temi = connection.getTemiByUser(user.idUser);
             return View(model);
         }
+        [HttpPost]
+        public IActionResult Search(SearchTemi model)
+        {
+            User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
+            model.temi = connection.searchTemi(user.idUser, model.criteria);
+            return View("Browse", model);
+        }
     }
 }
