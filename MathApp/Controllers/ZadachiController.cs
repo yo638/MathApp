@@ -16,7 +16,7 @@ namespace MathApp.Controllers
         {
             Zadacha zadacha = new Zadacha();
             zadacha.categories.Add(new Category(1, "A"));
-            zadacha.answers.Add(new Answer("Отговор", true));
+            zadacha.answers.Add(new Answer("", true));
             return View(zadacha);
         }
         [HttpPost]
@@ -52,7 +52,7 @@ namespace MathApp.Controllers
         [HttpPost]
         public IActionResult AddAnswerCreate(Zadacha zadacha)
         {
-            zadacha.answers.Add(new Answer("Отговор",true));
+            zadacha.answers.Add(new Answer("",true));
             return View("Create",zadacha);
         }
         [HttpPost]
@@ -100,9 +100,9 @@ namespace MathApp.Controllers
                 zadacha.updateDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 if(connection.updateZadacha(zadacha))
                 {
-                    ViewBag.MessageType = string.Format("success");
-                    ViewBag.Message = string.Format("Промените бяха запазени.");
-                    return View("Browse", connection.getZadachiByUser(zadacha.user));
+                    TempData["MessageType"] = "success";
+                    TempData["Message"] = "Промените бяха запазени.";
+                    return RedirectToAction("Browse", "Zadachi");
                 }
                 else
                 {
@@ -121,7 +121,7 @@ namespace MathApp.Controllers
         [HttpPost]
         public IActionResult AddAnswerEdit(Zadacha zadacha)
         {
-            zadacha.answers.Add(new Answer("Отговор", true));
+            zadacha.answers.Add(new Answer("", true));
             return View("Edit", zadacha);
         }
         [HttpPost]

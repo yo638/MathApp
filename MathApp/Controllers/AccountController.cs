@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using MathApp.Models;
-using MathApp.Models.NotificationTypes;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 
@@ -41,7 +40,7 @@ namespace MathApp.Controllers
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Вие се логнахте успешно.");
                     HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
-                    return LocalRedirect("/Home/Index");
+                    return LocalRedirect("/Zadachi/Browse");
                 }
                 else {
                     ViewBag.MessageType = string.Format("error");
@@ -83,10 +82,10 @@ namespace MathApp.Controllers
                                 {
                                     if (connection.RegisterUser(user))
                                     {
-                                        HttpContext.Session.SetString("UserSession", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
+                                        HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
                                         ViewBag.MessageType = string.Format("success");
                                         ViewBag.Message = string.Format("Вие се регистрирахте успешно.");
-                                        return LocalRedirect("/Home/Index");
+                                        return LocalRedirect("/Zadachi/Browse");
                                     }
                                     else
                                     {

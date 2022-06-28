@@ -80,7 +80,7 @@ namespace MathApp.Controllers
         [HttpPost]
         public IActionResult AddAnswerCreate(Tema tema)
         {
-            tema.zadachi[tema.zadachi.Count()-1].answers.Add(new Answer("Отговор", true));
+            tema.zadachi[tema.zadachi.Count()-1].answers.Add(new Answer("", true));
             ViewBag.ModalVisibility = string.Format("block");
             return View("Create", tema);
         }
