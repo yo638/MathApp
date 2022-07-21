@@ -35,11 +35,11 @@ namespace MathApp.Controllers
             }
             else
             {
-                if (connection.logUserIn(user))
+                if (connection.LogUserIn(user))
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Вие се логнахте успешно.");
-                    HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
+                    HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.GetUserByEmail(user.email)));
                     return LocalRedirect("/Zadachi/Browse");
                 }
                 else {
@@ -82,7 +82,7 @@ namespace MathApp.Controllers
                                 {
                                     if (connection.RegisterUser(user))
                                     {
-                                        HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.getUserByEmail(user.email)));
+                                        HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.GetUserByEmail(user.email)));
                                         ViewBag.MessageType = string.Format("success");
                                         ViewBag.Message = string.Format("Вие се регистрирахте успешно.");
                                         return LocalRedirect("/Zadachi/Browse");

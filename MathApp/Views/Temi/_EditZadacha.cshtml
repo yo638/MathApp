@@ -1,0 +1,128 @@
+﻿@model MathApp.Models.Zadacha
+
+<div class="modal" id="modalCreateZadacha">
+    <div class="modal-dialog" role="document" style="max-width: 1000px; backdrop-filter: drop-shadow(4px 4px 10px blue)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Създай задача</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <input type="hidden" name="creationDate" value="@Model.creationDate" />
+            <input type="hidden" name="updateDate" value="@Model.updateDate" />
+            <input type="hidden" name="user" value="@Model.user" />
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <div class="modal-body">
+                            <legend class="mt-4" style="margin-bottom:0;">Условие</legend>
+                            <textarea name="uslovie" class="form-control" id="uslovieTextArea" rows="6">@Model.uslovie</textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="modal-body">
+                            <legend class="mt-4" style="margin-bottom:0;">Решение</legend>
+                            <textarea name="solution" class="form-control" id="solutionTextArea" rows="6">@Model.solution</textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Отговори</legend></td></tr>
+                @if (Model.answers != null)
+                {
+                    @for (var a = 0; a < Model.answers.Count(); a++)
+                    {
+                        <tr>
+                            <td>
+                                <div class="modal-body">
+                                    <label for="answers[a].answer" class="form-label mt-4">Отговор @(a+1)</label>
+                                    <input type="text" name="answers[@a].answer" value="@Model.answers[@a].answer" class="form-control" id="answers[@a].answer" aria-describedby="emailHelp" placeholder="Въведете отговор">
+                                </div>
+                            </td>
+                            <td class="modal-body">
+                                <fieldset class="modal-body" style="margin-left:40px;margin-top:40px;">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="answers[@a].validity" id="answers[@a].validitytrue" value="true">
+                                            Верен
+                                        </label>
+                                        <script>if("@Model.answers[a].validity"=="True")document.getElementById("answers[@a].validitytrue").checked = true;</script>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="answers[@a].validity" id="answers[@a].validityfalse" value="false">
+                                            Грешен
+                                        </label>
+                                        <script>if("@Model.answers[a].validity"!="True")document.getElementById("answers[@a].validityfalse").checked = true;</script>
+                                    </div>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="2" style="text-align:right" class="modal-body">
+                        <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Temi/AddAnswerCreate" />
+                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Temi/RemoveAnswerCreate" />
+                    </td>
+                </tr>
+                <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
+                @if (Model.categories != null)
+                {
+                    @for (var i = 0; i < Model.categories.Count(); i++)
+                    {
+                        <tr>
+                            <td class="modal-body">
+                                <div class="form-group">
+                                    <label for="categories[@i].grade" class="form-label mt-4">Клас</label>
+                                    <select name="categories[@i].grade" value="@Model.categories[i].grade" class="form-select" id="categories[@i].grade">
+                                        <option value="1">1 клас</option>
+                                        <option value="2">2 клас</option>
+                                        <option value="3">3 клас</option>
+                                        <option value="4">4 клас</option>
+                                        <option value="5">5 клас</option>
+                                        <option value="6">6 клас</option>
+                                        <option value="7">7 клас</option>
+                                        <option value="8">8 клас</option>
+                                        <option value="9">9 клас</option>
+                                        <option value="10">10 клас</option>
+                                        <option value="11">11 клас</option>
+                                        <option value="12">12 клас</option>
+                                    </select>
+                                    <script>document.getElementById("categories[@i].grade").selectedIndex = @(Model.categories[i].grade - 1);</script>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <label for="categories[@i].difficulty" class="form-label mt-4">Ниво</label>
+                                    <select name="categories[@i].difficulty" value="@Model.categories[i].difficulty" class="form-select" id="categories[@i].difficulty">
+                                        <option value="A">А (задачи за всички ученици)</option>
+                                        <option value="B">В (задачи за отлична подготовка)</option>
+                                        <option value="C">С (задачи за състезания)</option>
+                                    </select>
+                                    <script>
+                                        if ("@Model.categories[i].difficulty" == "A") document.getElementById("categories[@i].difficulty").selectedIndex = 0;
+                                        else if ("@Model.categories[i].difficulty" == "B") document.getElementById("categories[@i].difficulty").selectedIndex = 1;
+                                        else document.getElementById("categories[@i].difficulty").selectedIndex = 2;
+                                    </script>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="2" style="text-align:right" class="modal-body">
+                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Temi/AddCategoryCreate" />
+                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Temi/RemoveCategoryCreate" />
+                    </td>
+                </tr>
+            </table>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-save="modal" formaction="/Temi/EditZadacha">Запази</button>
+                <button type="button" id="closemodal" class="btn btn-primary" data-bs-dismiss="modal">Отказ</button>
+            </div>
+        </div>
+    </div>
+</div>

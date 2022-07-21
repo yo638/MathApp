@@ -20,7 +20,7 @@ namespace MathApp.Controllers
                 ViewBag.Message = string.Format((string)TempData["Message"]);
             }
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            return View(connection.getRecycledZadachiByUser(user.idUser));
+            return View(connection.GetRecycledZadachiByUser(user.idUser));
         }
         public IActionResult Temi()
         {
@@ -36,7 +36,7 @@ namespace MathApp.Controllers
         }
         public IActionResult RecoverZadacha(int id)
         {
-            if (connection.recoverZadachaFromRecycleBin(id))
+            if (connection.RecoverZadachaFromRecycleBin(id))
             {
                 TempData["MessageType"] = "success";
                 TempData["Message"] = "Задачата е възстановена.";
@@ -50,7 +50,7 @@ namespace MathApp.Controllers
         }
         public IActionResult DeleteZadacha(int id)
         {
-            if (connection.deleteZadacha(id))
+            if (connection.DeleteZadacha(id))
             {
                 TempData["MessageType"] = "success";
                 TempData["Message"] = "Задачата е изтрита.";

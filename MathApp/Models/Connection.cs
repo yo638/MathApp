@@ -29,10 +29,7 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     int count = Convert.ToInt32(mycommand.ExecuteScalar());
@@ -57,7 +54,7 @@ namespace MathApp.Models
             }
         }
 
-        public User getUserByEmail(string email)
+        public User GetUserByEmail(string email)
         {
             User u = new User();
             try
@@ -65,10 +62,7 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT * FROM math_app.users WHERE email='" + email + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -90,7 +84,7 @@ namespace MathApp.Models
             }
         }
 
-        public bool logUserIn(User u)
+        public bool LogUserIn(User u)
         {
             try
             {
@@ -98,10 +92,7 @@ namespace MathApp.Models
                 {
                     string realpassword = "";
                     string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     int count = Convert.ToInt32(mycommand.ExecuteScalar());
                     if (count > 0)
@@ -125,7 +116,7 @@ namespace MathApp.Models
             }
         }
 
-        public bool createZadacha(Zadacha zadacha)
+        public bool CreateZadacha(Zadacha zadacha)
         {
             try
             {
@@ -133,9 +124,7 @@ namespace MathApp.Models
                 {
                     int answerID = 0, categoryID = 0;
                     string command = "INSERT IGNORE INTO `math_app`.`zadachi` ( `uslovie`, `solution`, `creation_date`, `update_date`, `user`, `status`) VALUES ('" + zadacha.uslovie + "','" + zadacha.solution + "','" + zadacha.creationDate + "','" + zadacha.updateDate + "','" + zadacha.user + "','saved');";
-                    if (myconnection.State.ToString() != "Open") {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
 
@@ -199,7 +188,7 @@ namespace MathApp.Models
 
 
 
-        public IEnumerable<Zadacha> getZadachiByUser(int userID)
+        public IEnumerable<Zadacha> GetZadachiByUser(int userID)
         {
             List<Zadacha> zadachi = new List<Zadacha>();
             try
@@ -207,10 +196,7 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT `id_zadacha`,`uslovie`,`update_date` FROM `math_app`.`zadachi` WHERE `user`='" + userID + "' AND `status`='saved' ORDER BY `update_date` DESC;";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -221,22 +207,7 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
-                    int time = 0;
-                    DateTime nowdate=DateTime.Now;
-                    for (int i = 0; i < zadachi.Count; i++)
-                    {
-                        DateTime update = DateTime.Parse(zadachi[i].updateDate);
-                        time=(nowdate.Date - update.Date).Days;
-
-                        if(time==0) zadachi[i].timeago = "today";
-                        else if(time==1) zadachi[i].timeago = "yesterday";
-                        else if (time < 7) zadachi[i].timeago = time.ToString() + " days ago";
-                        else if (time < 30) { time = time / 7; zadachi[i].timeago = time.ToString() + " weeks ago"; }
-                        else if (time < 365) { time = time / 30; zadachi[i].timeago = time.ToString() + " months ago"; }
-                        else { time = time / 365; zadachi[i].timeago = time.ToString() + " years ago"; }
-
-                    }
-                    return zadachi;
+                    return CalculateTimeTillLastUpdateOfZadachi(zadachi);
                 }
             }
             catch (Exception e)
@@ -245,7 +216,7 @@ namespace MathApp.Models
                 return zadachi;
             }
         }
-        public IEnumerable<Zadacha> getRecycledZadachiByUser(int userID)
+        public IEnumerable<Zadacha> GetRecycledZadachiByUser(int userID)
         {
             List<Zadacha> zadachi = new List<Zadacha>();
             try
@@ -253,10 +224,7 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT `id_zadacha`,`uslovie`,`update_date` FROM `math_app`.`zadachi` WHERE `user`='" + userID + "' AND `status`='recyclebin' ORDER BY `update_date` DESC;";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -267,22 +235,7 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
-                    int time = 0;
-                    DateTime nowdate = DateTime.Now;
-                    for (int i = 0; i < zadachi.Count; i++)
-                    {
-                        DateTime update = DateTime.Parse(zadachi[i].updateDate);
-                        time = (nowdate.Date - update.Date).Days;
-
-                        if (time == 0) zadachi[i].timeago = "today";
-                        else if (time == 1) zadachi[i].timeago = "yesterday";
-                        else if (time < 7) zadachi[i].timeago = time.ToString() + " days ago";
-                        else if (time < 30) { time = time / 7; zadachi[i].timeago = time.ToString() + " weeks ago"; }
-                        else if (time < 365) { time = time / 30; zadachi[i].timeago = time.ToString() + " months ago"; }
-                        else { time = time / 365; zadachi[i].timeago = time.ToString() + " years ago"; }
-
-                    }
-                    return zadachi;
+                    return CalculateTimeTillLastUpdateOfZadachi(zadachi);
                 }
             }
             catch (Exception e)
@@ -292,21 +245,18 @@ namespace MathApp.Models
             }
         }
 
-        public Zadacha getZadachaByID(int zadachaID)
+        public Zadacha GetZadachaByID(int zadachaID)
         {
             Zadacha zadacha = new Zadacha();
-            zadacha.idZadacha = zadachaID;
             try
             {
                 using (myconnection)
                 {
                     string command = "SELECT * FROM `math_app`.`zadachi` WHERE `id_zadacha`='" + zadachaID + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader readerZadacha = mycommand.ExecuteReader();
+                    
                     while (readerZadacha.Read())
                     {
                         zadacha.idZadacha = Convert.ToInt32(readerZadacha["id_zadacha"].ToString());
@@ -318,23 +268,8 @@ namespace MathApp.Models
                     }
                     readerZadacha.Close();
 
-                    command = "SELECT a.answer, a.validity FROM math_app.answers a JOIN math_app.junction_zadachi_answers jza ON a.id_answer=jza.answer JOIN math_app.zadachi z ON z.id_zadacha=jza.zadacha WHERE z.id_zadacha='"+zadachaID+"';";
-                    mycommand = new MySqlCommand(command, myconnection);
-                    MySqlDataReader readerAnswr = mycommand.ExecuteReader();
-                    while (readerAnswr.Read())
-                    {
-                        zadacha.answers.Add(new Answer(readerAnswr["answer"].ToString(), Convert.ToBoolean(Convert.ToInt32(readerAnswr["validity"].ToString()))));
-                    }
-                    readerAnswr.Close();
-
-                    command = "SELECT c.id_category, c.grade, c.difficulty FROM math_app.categories c JOIN math_app.`junction_zadachi_categories` jzc ON c.id_category=jzc.category JOIN math_app.zadachi z ON z.id_zadacha=jzc.zadacha WHERE z.id_zadacha='" + zadachaID+"';";
-                    mycommand = new MySqlCommand(command, myconnection);
-                    MySqlDataReader readerCatg = mycommand.ExecuteReader();
-                    while (readerCatg.Read())
-                    {
-                        zadacha.categories.Add(new Category(Convert.ToInt32(readerCatg["id_category"].ToString()), Convert.ToInt32(readerCatg["grade"].ToString()), (readerCatg["difficulty"].ToString())));
-                    }
-                    readerCatg.Close();
+                    zadacha.answers=GetAnswersOfZadacha(zadachaID);
+                    zadacha.categories=GetCategoriesOfZadacha(zadachaID);
 
                     return zadacha;
                 }
@@ -346,7 +281,37 @@ namespace MathApp.Models
             }
         }
 
-        public bool updateZadacha(Zadacha zadacha)
+        private List<Category> GetCategoriesOfZadacha(int zadachaID)
+        {
+            List<Category> categories = new List<Category>();
+            string command = "SELECT c.id_category, c.grade, c.difficulty FROM math_app.categories c JOIN math_app.`junction_zadachi_categories` jzc ON c.id_category=jzc.category JOIN math_app.zadachi z ON z.id_zadacha=jzc.zadacha WHERE z.id_zadacha='" + zadachaID + "';";
+            mycommand = new MySqlCommand(command, myconnection);
+            MySqlDataReader readerCategories = mycommand.ExecuteReader();
+            while (readerCategories.Read())
+            {
+                categories.Add(new Category(Convert.ToInt32(readerCategories["id_category"].ToString()),
+                    Convert.ToInt32(readerCategories["grade"].ToString()), (readerCategories["difficulty"].ToString())));
+            }
+            readerCategories.Close();
+            return categories;
+        }
+
+        private List<Answer> GetAnswersOfZadacha(int zadachaID)
+        {
+            List<Answer> answers = new List<Answer>();
+            string command = "SELECT a.answer, a.validity FROM math_app.answers a JOIN math_app.junction_zadachi_answers jza ON a.id_answer=jza.answer JOIN math_app.zadachi z ON z.id_zadacha=jza.zadacha WHERE z.id_zadacha='" + zadachaID + "';";
+            mycommand = new MySqlCommand(command, myconnection);
+            MySqlDataReader readerAnswer = mycommand.ExecuteReader();
+            while (readerAnswer.Read())
+            {
+                answers.Add(new Answer(readerAnswer["answer"].ToString(),
+                    Convert.ToBoolean(Convert.ToInt32(readerAnswer["validity"].ToString()))));
+            }
+            readerAnswer.Close();
+            return answers;
+        }
+
+        public bool UpdateZadacha(Zadacha zadacha)
         {
             try
             {
@@ -354,10 +319,7 @@ namespace MathApp.Models
                 {
                     int answerID = 0, categoryID=0;
                     string command = "UPDATE `math_app`.`zadachi` SET `uslovie`='"+zadacha.uslovie+"', `solution`='"+zadacha.solution+"', `update_date`='"+zadacha.updateDate+"' WHERE `id_zadacha`='"+zadacha.idZadacha+"';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
 
@@ -416,17 +378,14 @@ namespace MathApp.Models
                 return false;
             }
         }
-        public bool addZadachaToRecycleBin(int zadachaID)
+        public bool AddZadachaToRecycleBin(int zadachaID)
         {
             try
             {
                 using (myconnection)
                 {
                     string command = "UPDATE `math_app`.`zadachi` SET `status`='recyclebin' WHERE `id_zadacha`='" + zadachaID + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -438,17 +397,14 @@ namespace MathApp.Models
                 return false;
             }
         }
-        public bool recoverZadachaFromRecycleBin(int zadachaID)
+        public bool RecoverZadachaFromRecycleBin(int zadachaID)
         {
             try
             {
                 using (myconnection)
                 {
                     string command = "UPDATE `math_app`.`zadachi` SET `status`='saved' WHERE `id_zadacha`='" + zadachaID + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -460,17 +416,14 @@ namespace MathApp.Models
                 return false;
             }
         }
-        public bool deleteZadacha(int zadachaID)
+        public bool DeleteZadacha(int zadachaID)
         {
             try
             {
                 using (myconnection)
                 {
                     string command = "DELETE FROM `math_app`.`zadachi` WHERE `id_zadacha`='" + zadachaID + "';";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
                     return true;
@@ -482,7 +435,67 @@ namespace MathApp.Models
                 return false;
             }
         }
-        public IEnumerable<Zadacha> searchZadachi(int userID, SearchCriteriaZadacha criteria)
+        private IEnumerable<Zadacha> CalculateTimeTillLastUpdateOfZadachi(List<Zadacha> zadachi)
+        {
+            int timespan = 0;
+            DateTime todayDate = DateTime.Now;
+            DateTime updateDate;
+            for (int i = 0; i < zadachi.Count; i++)
+            {
+                updateDate = DateTime.Parse(zadachi[i].updateDate);
+                timespan = (todayDate.Date - updateDate.Date).Days;
+
+                if (timespan == 0) 
+                    zadachi[i].timeago = "today";
+
+                else if (timespan == 1) 
+                    zadachi[i].timeago = "yesterday";
+
+                else if (timespan < 7) 
+                    zadachi[i].timeago = timespan.ToString() + " days ago";
+
+                else if (timespan < 30)
+                    zadachi[i].timeago = (timespan / 7).ToString() + " weeks ago";
+                
+                else if (timespan < 365) 
+                    zadachi[i].timeago = (timespan / 30).ToString() + " months ago";
+                
+                else 
+                    zadachi[i].timeago = (timespan / 365).ToString() + " years ago";
+            }
+            return zadachi;
+        }
+        private IEnumerable<Tema> CalculateTimeTillLastUpdateOfTemi(List<Tema> temi)
+        {
+            int timespan = 0;
+            DateTime todayDate = DateTime.Now;
+            DateTime updateDate;
+            for (int i = 0; i < temi.Count; i++)
+            {
+                updateDate = DateTime.Parse(temi[i].updateDate);
+                timespan = (todayDate.Date - updateDate.Date).Days;
+
+                if (timespan == 0)
+                    temi[i].timeago = "today";
+
+                else if (timespan == 1)
+                    temi[i].timeago = "yesterday";
+
+                else if (timespan < 7)
+                    temi[i].timeago = timespan.ToString() + " days ago";
+
+                else if (timespan < 30)
+                    temi[i].timeago = (timespan / 7).ToString() + " weeks ago";
+
+                else if (timespan < 365)
+                    temi[i].timeago = (timespan / 30).ToString() + " months ago";
+
+                else
+                    temi[i].timeago = (timespan / 365).ToString() + " years ago";
+            }
+            return temi;
+        }
+        public IEnumerable<Zadacha> SearchZadachi(int userID, SearchCriteriaZadacha criteria)
         {
             List<Zadacha> zadachi = new List<Zadacha>();
             try
@@ -505,10 +518,7 @@ namespace MathApp.Models
                     if (criteria.category.difficulty!="X") command += " AND c.difficulty='"+criteria.category.difficulty+"'";
 
                     command += " ORDER BY `update_date` DESC;";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -519,22 +529,7 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
-                    int time = 0;
-                    DateTime nowdate = DateTime.Now;
-                    for (int i = 0; i < zadachi.Count; i++)
-                    {
-                        DateTime update = DateTime.Parse(zadachi[i].updateDate);
-                        time = (nowdate.Date - update.Date).Days;
-
-                        if (time == 0) zadachi[i].timeago = "today";
-                        else if (time == 1) zadachi[i].timeago = "yesterday";
-                        else if (time < 7) zadachi[i].timeago = time.ToString() + " days ago";
-                        else if (time < 30) { time = time / 7; zadachi[i].timeago = time.ToString() + " weeks ago"; }
-                        else if (time < 365) { time = time / 30; zadachi[i].timeago = time.ToString() + " months ago"; }
-                        else { time = time / 365; zadachi[i].timeago = time.ToString() + " years ago"; }
-
-                    }
-                    return zadachi;
+                    return CalculateTimeTillLastUpdateOfZadachi(zadachi);
                 }
             }
             catch (Exception e)
@@ -543,18 +538,14 @@ namespace MathApp.Models
                 return zadachi;
             }
         }
-        public bool createTema(Tema tema)
+        public bool CreateTema(Tema tema)
         {
             try
             {
                 using (myconnection)
                 {
-                    string command = "";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
-                    command = "INSERT IGNORE INTO `math_app`.`temi` (`tema`,`description`,`type`,`creation_date`,`update_date`,`event_date`,`user`,`deletionstatus`) " +
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
+                    string command = "INSERT IGNORE INTO `math_app`.`temi` (`tema`,`description`,`type`,`creation_date`,`update_date`,`event_date`,`user`,`deletionstatus`) " +
                      "VALUES ('" + tema.temaName + "','" + tema.description + "','tema','" + tema.creationDate + "','" + tema.updateDate + "','" + tema.creationDate + "','" + tema.user + "','saved');";
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
@@ -574,7 +565,7 @@ namespace MathApp.Models
                         {
                             if (!string.IsNullOrEmpty(tema.zadachi[i].uslovie))
                             {
-                                createZadacha(tema.zadachi[i]);
+                                CreateZadacha(tema.zadachi[i]);
                                 if(myconnection.State.ToString()!="Open") myconnection.Open();
                                 command = "SELECT `id_zadacha` FROM math_app.zadachi WHERE uslovie='" + tema.zadachi[i].uslovie + "' AND creation_date='" + tema.zadachi[i].creationDate + "';";
                                 mycommand = new MySqlCommand(command, myconnection);
@@ -622,7 +613,7 @@ namespace MathApp.Models
             }
         }
 
-        public IEnumerable<Tema> getTemiByUser(int userID)
+        public IEnumerable<Tema> GetTemiByUser(int userID)
         {
             List<Tema> temi = new List<Tema>();
             try
@@ -630,7 +621,7 @@ namespace MathApp.Models
                 using (myconnection)
                 {
                     string command = "SELECT `id_tema`,`tema`,`description`,`update_date` FROM `math_app`.`temi` WHERE `user`='" + userID + "' AND `deletionstatus`='saved' ORDER BY `update_date` DESC;";
-                    myconnection.Open();
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -642,22 +633,7 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
-                    int time = 0;
-                    DateTime nowdate = DateTime.Now;
-                    for (int i = 0; i < temi.Count; i++)
-                    {
-                        DateTime update = DateTime.Parse(temi[i].updateDate);
-                        time = (nowdate.Date - update.Date).Days;
-
-                        if (time == 0) temi[i].timeago = "today";
-                        else if (time == 1) temi[i].timeago = "yesterday";
-                        else if (time < 7) temi[i].timeago = time.ToString() + " days ago";
-                        else if (time < 30) { time = time / 7; temi[i].timeago = time.ToString() + " weeks ago"; }
-                        else if (time < 365) { time = time / 30; temi[i].timeago = time.ToString() + " months ago"; }
-                        else { time = time / 365; temi[i].timeago = time.ToString() + " years ago"; }
-
-                    }
-                    return temi;
+                    return CalculateTimeTillLastUpdateOfTemi(temi);
                 }
             }
             catch (Exception e)
@@ -666,7 +642,7 @@ namespace MathApp.Models
                 return temi;
             }
         }
-        public IEnumerable<Tema> searchTemi(int userID, SearchCriteriaTema criteria)
+        public IEnumerable<Tema> SearchTemi(int userID, SearchCriteriaTema criteria)
         {
             List<Tema> temi = new List<Tema>();
             try
@@ -686,10 +662,7 @@ namespace MathApp.Models
                     if (criteria.category.difficulty != "X") command += " AND c.difficulty='" + criteria.category.difficulty + "'";
 
                     command += " ORDER BY `update_date` DESC;";
-                    if (myconnection.State.ToString() != "Open")
-                    {
-                        myconnection.Open();
-                    }
+                    if (myconnection.State.ToString() != "Open") myconnection.Open();
                     mycommand = new MySqlCommand(command, myconnection);
                     MySqlDataReader reader = mycommand.ExecuteReader();
                     while (reader.Read())
@@ -701,22 +674,7 @@ namespace MathApp.Models
                             reader["update_date"].ToString()));
                     }
                     reader.Close();
-                    int time = 0;
-                    DateTime nowdate = DateTime.Now;
-                    for (int i = 0; i < temi.Count; i++)
-                    {
-                        DateTime update = DateTime.Parse(temi[i].updateDate);
-                        time = (nowdate.Date - update.Date).Days;
-
-                        if (time == 0) temi[i].timeago = "today";
-                        else if (time == 1) temi[i].timeago = "yesterday";
-                        else if (time < 7) temi[i].timeago = time.ToString() + " days ago";
-                        else if (time < 30) { time = time / 7; temi[i].timeago = time.ToString() + " weeks ago"; }
-                        else if (time < 365) { time = time / 30; temi[i].timeago = time.ToString() + " months ago"; }
-                        else { time = time / 365; temi[i].timeago = time.ToString() + " years ago"; }
-
-                    }
-                    return temi;
+                    return CalculateTimeTillLastUpdateOfTemi(temi);
                 }
             }
             catch (Exception e)

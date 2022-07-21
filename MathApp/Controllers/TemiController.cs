@@ -11,6 +11,7 @@ namespace MathApp.Controllers
 {
     public class TemiController : Controller
     {
+        private readonly ApplicationDbContext _context;
         Connection connection = new Connection();
         public IActionResult Create()
         {
@@ -29,7 +30,7 @@ namespace MathApp.Controllers
                 tema.user = user.idUser;
                 tema.creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 tema.updateDate = tema.creationDate;
-                if (connection.createTema(tema))
+                if (connection.CreateTema(tema))
                 {
                     TempData["MessageType"] = "success";
                     TempData["Message"] = "Темата беше създадена.";
@@ -154,15 +155,20 @@ namespace MathApp.Controllers
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             SearchTemi model = new SearchTemi();
             model.criteria = new SearchCriteriaTema();
-            model.temi = connection.getTemiByUser(user.idUser);
+            model.temi = connection.GetTemiByUser(user.idUser);
             return View(model);
         }
         [HttpPost]
         public IActionResult Search(SearchTemi model)
         {
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            model.temi = connection.searchTemi(user.idUser, model.criteria);
+            model.temi = connection.SearchTemi(user.idUser, model.criteria);
             return View("Browse", model);
+        }
+        public IActionResult EditZadacha(int id)
+        {
+            var zadacha=_context.
+            return PartialView("_EditZadacha", model);
         }
     }
 }

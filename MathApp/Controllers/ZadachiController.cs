@@ -29,7 +29,7 @@ namespace MathApp.Controllers
                 zadacha.user = user.idUser;
                 zadacha.creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 zadacha.updateDate = zadacha.creationDate;
-                if(connection.createZadacha(zadacha))
+                if(connection.CreateZadacha(zadacha))
                 {
                     TempData["MessageType"] = "success";
                     TempData["Message"] = "Задачата беше създадена.";
@@ -90,7 +90,7 @@ namespace MathApp.Controllers
         }
         public IActionResult Edit(int id)
         {
-            return View("Edit",connection.getZadachaByID(id));
+            return View("Edit",connection.GetZadachaByID(id));
         }
         [HttpPost]
         public IActionResult Edit(Zadacha zadacha)
@@ -98,7 +98,7 @@ namespace MathApp.Controllers
             if (!String.IsNullOrEmpty(zadacha.uslovie))
             {
                 zadacha.updateDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                if(connection.updateZadacha(zadacha))
+                if(connection.UpdateZadacha(zadacha))
                 {
                     TempData["MessageType"] = "success";
                     TempData["Message"] = "Промените бяха запазени.";
@@ -168,12 +168,12 @@ namespace MathApp.Controllers
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             SearchZadachi model = new SearchZadachi();
             model.criteria = new SearchCriteriaZadacha();
-            model.zadachi = connection.getZadachiByUser(user.idUser);
+            model.zadachi = connection.GetZadachiByUser(user.idUser);
             return View(model);
         }
         public IActionResult AddToRecycleBin(int id)
         {
-            if (connection.addZadachaToRecycleBin(id))
+            if (connection.AddZadachaToRecycleBin(id))
             {
                 TempData["MessageType"] = "success";
                 TempData["Message"] = "Промените бяха запазени.";
@@ -189,7 +189,7 @@ namespace MathApp.Controllers
         public IActionResult Search(SearchZadachi model)
         {
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            model.zadachi = connection.searchZadachi(user.idUser, model.criteria);
+            model.zadachi = connection.SearchZadachi(user.idUser, model.criteria);
             return View("Browse", model);
         }
     }

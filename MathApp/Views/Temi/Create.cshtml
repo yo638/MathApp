@@ -113,6 +113,7 @@
                                     <small>@Model.zadachi.ElementAt(i).solution</small>
                                     <input type="hidden" name="zadachi[@i].idZadacha" value="@i" id="zadachi[@i].idZadacha" />
                                 </div>
+                                <button type="button" id="btneditzadacha" class="btn btn-primary" style="margin-top: 1.5rem;" formaction="Temi/Edit/{@i}">Добави задача</button>
                             </div>
                             <input type="hidden" name="zadachi[@i].uslovie" value="@Model.zadachi.ElementAt(@i).uslovie" />
                             <input type="hidden" name="zadachi[@i].solution" value="@Model.zadachi.ElementAt(@i).solution" />
