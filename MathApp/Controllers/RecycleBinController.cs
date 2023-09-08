@@ -20,7 +20,7 @@ namespace MathApp.Controllers
                 ViewBag.Message = string.Format((string)TempData["Message"]);
             }
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            return View(connection.GetRecycledZadachiByUser(user.idUser));
+            return View(connection.GetRecycledZadachiByUser(user.IdUser));
         }
         public IActionResult Temi()
         {

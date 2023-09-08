@@ -11,14 +11,14 @@ namespace MathApp.Controllers
 {
     public class TemiController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
         Connection connection = new Connection();
         public IActionResult Create()
         {
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             Tema tema = new Tema();
             string creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            tema.zadachi.Add(new Zadacha(0,user.idUser,creationDate,creationDate));
+            tema.zadachi.Add(new Zadacha(0,user.IdUser,creationDate,creationDate));
             ViewBag.ModalVisibility = string.Format("none");
             return View(tema);
         }
@@ -27,7 +27,7 @@ namespace MathApp.Controllers
         {
             if (!String.IsNullOrEmpty(tema.temaName)) {
                 User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-                tema.user = user.idUser;
+                tema.user = user.IdUser;
                 tema.creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 tema.updateDate = tema.creationDate;
                 if (connection.CreateTema(tema))
@@ -58,7 +58,7 @@ namespace MathApp.Controllers
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             string creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             int idZadacha=tema.zadachi.Count;
-            tema.zadachi.Add(new Zadacha(idZadacha, user.idUser,creationDate, creationDate));
+            tema.zadachi.Add(new Zadacha(idZadacha, user.IdUser,creationDate, creationDate));
             ViewBag.ModalVisibility = string.Format("none");
             return View("Create", tema);
         }
@@ -155,20 +155,20 @@ namespace MathApp.Controllers
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             SearchTemi model = new SearchTemi();
             model.criteria = new SearchCriteriaTema();
-            model.temi = connection.GetTemiByUser(user.idUser);
+            model.temi = connection.GetTemiByUser(user.IdUser);
             return View(model);
         }
         [HttpPost]
         public IActionResult Search(SearchTemi model)
         {
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            model.temi = connection.SearchTemi(user.idUser, model.criteria);
+            model.temi = connection.SearchTemi(user.IdUser, model.criteria);
             return View("Browse", model);
         }
-        public IActionResult EditZadacha(int id)
+        /*public IActionResult EditZadacha(int id)
         {
-            var zadacha=_context.
-            return PartialView("_EditZadacha", model);
-        }
+            //var zadacha=_context.
+            //return PartialView("_EditZadacha", model);
+        }*/
     }
 }

@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using MathApp.Models;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
+using System.Dynamic;
+using MathApp.Models.DbModels;
 
 namespace MathApp.Controllers
 {
@@ -28,7 +30,7 @@ namespace MathApp.Controllers
         [HttpPost]
         public IActionResult Login(User user)
         {
-            if (String.IsNullOrEmpty(user.email) || String.IsNullOrEmpty(user.password))
+            if (String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.Password))
             {
                 ViewBag.MessageType = string.Format("warning");
                 ViewBag.Message = string.Format("Моля, попълнете всички полета.");
@@ -39,7 +41,7 @@ namespace MathApp.Controllers
                 {
                     ViewBag.MessageType = string.Format("success");
                     ViewBag.Message = string.Format("Вие се логнахте успешно.");
-                    HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.GetUserByEmail(user.email)));
+                    HttpContext.Session.SetString("UserSessionKey", JsonConvert.SerializeObject(connection.GetUserByEmail(user.Email)));
                     return LocalRedirect("/Zadachi/Browse");
                 }
                 else {
@@ -58,7 +60,9 @@ namespace MathApp.Controllers
         [HttpPost]
         public IActionResult Register(User user)
         {
-            if (!String.IsNullOrEmpty(user.username) && !String.IsNullOrEmpty(user.email) && !String.IsNullOrEmpty(user.password) && !String.IsNullOrEmpty(user.repeatpassword))
+            User u = user;
+            int a = 0;
+            /*if (!String.IsNullOrEmpty(user.username) && !String.IsNullOrEmpty(user.email) && !String.IsNullOrEmpty(user.password) && !String.IsNullOrEmpty(user.repeatpassword))
             {
                 string emailPattern = @"^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$"; // Email address pattern
                 string passwordNumberPattern = @"[0-9]+";
@@ -127,7 +131,7 @@ namespace MathApp.Controllers
             {
                 ViewBag.MessageType = string.Format("warning");
                 ViewBag.Message = string.Format("Моля, попълнете всички полета.");
-            }
+            }*/
             return View();
         }
         public IActionResult Logout()

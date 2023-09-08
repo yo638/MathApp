@@ -26,7 +26,7 @@ namespace MathApp.Controllers
             {
                 zadacha.deletionStatus = "saved";
                 User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-                zadacha.user = user.idUser;
+                zadacha.user = user.IdUser;
                 zadacha.creationDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 zadacha.updateDate = zadacha.creationDate;
                 if(connection.CreateZadacha(zadacha))
@@ -168,7 +168,7 @@ namespace MathApp.Controllers
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
             SearchZadachi model = new SearchZadachi();
             model.criteria = new SearchCriteriaZadacha();
-            model.zadachi = connection.GetZadachiByUser(user.idUser);
+            model.zadachi = connection.GetZadachiByUser(user.IdUser);
             return View(model);
         }
         public IActionResult AddToRecycleBin(int id)
@@ -189,7 +189,7 @@ namespace MathApp.Controllers
         public IActionResult Search(SearchZadachi model)
         {
             User user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("UserSessionKey"));
-            model.zadachi = connection.SearchZadachi(user.idUser, model.criteria);
+            model.zadachi = connection.SearchZadachi(user.IdUser, model.criteria);
             return View("Browse", model);
         }
     }

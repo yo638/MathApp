@@ -4,46 +4,63 @@
     ViewData["Title"] = "Register";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<script type="text/javascript">
+function validatePassword() {
+    var p = document.getElementById('password').value,
+        errors = [];
+    if (p.length < 8) {
+        errors.push("Your password must be at least 8 characters"); 
+    }
+    if (p.search(/[a-z]/i) < 0) {
+        errors.push("Your password must contain at least one letter.");
+    }
+    if (p.search(/[0-9]/) < 0) {
+        errors.push("Your password must contain at least one digit."); 
+    }
+    if (errors.length > 0) {
+        alert(errors.join("\n"));
+        return false;
+    }
+    return true;
+}
+</script>
 <h1 style="margin-top:2rem">Регистрация</h1>
 
 <div class="form-group row">
     <hr />
-    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
-    {
+    <form method="post" action="Register" onsubmit="return validatePassword()">
     <table width="90%" align="center">
         <tr>
             <td>
                 <label class="form-label mt-4">Потребителско име:</label>
-
-                @Html.TextBoxFor(model => model.username, new { @class = "form-control", Placeholder = "Въведете потребителско име" })
+                <input type="text" name="Username" class="form-control" id="user.Username" placeholder = "Въведете потребителско име">
             </td>
         </tr>
         <tr>
             <td>
                 <label class="form-label mt-4">Имейл:</label>
 
-                @Html.TextBoxFor(model => model.email, new { @class = "form-control", Placeholder = "Въведете имейл" })
+                <input type="text" name="Email" class="form-control" id="user.Email" placeholder = "Въведете имейл">
 
                 <label class="form-label mt-4">Парола:</label>
             </td>
         </tr>
         <tr>
             <td>
-                @Html.TextBoxFor(model => model.password, new { @class = "form-control", @type = "password", Placeholder = "Въведете парола" })
+                <input type="text" name="Password" class="form-control" id="password" placeholder = "Въведете парола">
 
                 <label class="form-label mt-4">Повторете паролата:</label>
             </td>
         </tr>
         <tr>
             <td>
-                @Html.TextBoxFor(model => model.repeatpassword, new { @class = "form-control", @type = "password", Placeholder = "Повторете паролата" })
+                <input type="text" class="form-control" id="repeatPassword"  placeholder = "Повторете паролата">
 
-                <input type="submit" id="submitbtn" class="btn btn-primary" value="Регистрация" style="margin-top:2rem" />
+                <input type="submit" id="submitbtn" class="btn btn-primary" value="Регистрация" style="margin-top:2rem"/>
             </td>
         </tr>
     </table>
-    }
+    </form>
 </div>
 
 @if (ViewBag.Message != null)

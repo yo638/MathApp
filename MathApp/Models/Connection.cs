@@ -6,6 +6,8 @@ using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Net;
+using System.Text;
+using MathApp.Models.DbModels;
 
 namespace MathApp.Models
 {
@@ -13,101 +15,94 @@ namespace MathApp.Models
     {
         MySqlConnection myconnection;
         MySqlCommand mycommand;
+        math_appContext context;
         private void ConnectionTo()
         {
-            myconnection = new MySqlConnection("server=localhost;user=root;database=math_app;port=3307;password=%s1WnX6*");
+            context = new math_appContext();
+            //myconnection = new MySqlConnection("server=localhost;user=root;database=math_app;port=3307;password=%s1WnX6*");
         }
         public Connection()
         {
             ConnectionTo();
         }
        
-        public bool RegisterUser(User u)
+        /*public bool RegisterUser(Users user)
         {
             try
             {
-                using (myconnection)
+                var users = context.Users.Select(u => new { u.Email}).Where(u => u.Email == user.Email).ToList();
+                if (users.Count == 0)
                 {
-                    string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    if (myconnection.State.ToString() != "Open") myconnection.Open();
+                    string NonHashedPassword = user.Password;
+                    user.Password = Hashing.toSHA256(NonHashedPassword, Hashing.createSalt());
+                    context.Users.Add(user);
+                }
+                else return false;
+
+                string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
+                if (myconnection.State.ToString() != "Open") myconnection.Open();
+                mycommand = new MySqlCommand(command, myconnection);
+                mycommand.ExecuteNonQuery();
+                int count = Convert.ToInt32(mycommand.ExecuteScalar());
+                if (count > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    u.password = Hashing.toSHA256(u.repeatpassword, Hashing.createSalt());
+                    command = "INSERT INTO `math_app`.`users` ( `username`, `email`, `password`) VALUES ('" + u.username + "','" + u.email + "','" + u.password + "');";
                     mycommand = new MySqlCommand(command, myconnection);
                     mycommand.ExecuteNonQuery();
-                    int count = Convert.ToInt32(mycommand.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        u.password = Hashing.toSHA256(u.repeatpassword, Hashing.createSalt());
-                        command = "INSERT INTO `math_app`.`users` ( `username`, `email`, `password`) VALUES ('" + u.username + "','" + u.email + "','" + u.password + "');";
-                        mycommand = new MySqlCommand(command, myconnection);
-                        mycommand.ExecuteNonQuery();
-                        return true;
-                    }
+                    return true;
                 }
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return false;
             }
-        }
+        }*/
 
-        public User GetUserByEmail(string email)
+        public Users GetUserByEmail(string email)
         {
-            User u = new User();
+            var user = new List<Users>();
             try
             {
-                using (myconnection)
-                {
-                    string command = "SELECT * FROM math_app.users WHERE email='" + email + "';";
-                    if (myconnection.State.ToString() != "Open") myconnection.Open();
-                    mycommand = new MySqlCommand(command, myconnection);
-                    MySqlDataReader reader = mycommand.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        u.idUser = Convert.ToInt32(reader["id_user"].ToString());
-                        u.username = reader["username"].ToString();
-                        u.email = reader["email"].ToString();
-                        u.password = reader["password"].ToString();
-                    }
-                    reader.Close();
-                }
-
-                return u;
+                user = context.Users.Where(u => u.Email == email).ToList();
+                return user[0];
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return u;
+                return user[0];
             }
         }
 
-        public bool LogUserIn(User u)
+        public bool LogUserIn(User user)
         {
+            /*math_appContext context = new math_appContext();
+            StringBuilder sb = new StringBuilder();
+            Users[] users = context.Users.OrderBy(a => a.IdUser).ToArray();
+
+            foreach(Users a in users)
+            {
+                sb.AppendLine($"{a.IdUser} {a.Username} {a.Password} {a.Email}");
+            }
+            Console.WriteLine(sb);
+            return true;*/
             try
             {
-                using (myconnection)
+
+                var users = context.Users.Select(u => new { u.Email, u.Password }).Where(u => u.Email == user.Email).ToList();
+                if (users.Count > 0)
                 {
-                    string realpassword = "";
-                    string command = "SELECT * FROM math_app.users WHERE email='" + u.email + "';";
-                    if (myconnection.State.ToString() != "Open") myconnection.Open();
-                    mycommand = new MySqlCommand(command, myconnection);
-                    int count = Convert.ToInt32(mycommand.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        MySqlDataReader reader = mycommand.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            realpassword = reader["password"].ToString();
-                        }
-                        reader.Close();
-                        if (Hashing.comparePasswords(realpassword, u.password)) return true;
-                        else return false;
-                    }
+                    if (Hashing.comparePasswords(users[0].Password, user.Password)) return true;
                     else return false;
                 }
+                else return false;
+
             }
             catch (Exception e)
             {
