@@ -1,0 +1,556 @@
+﻿@model MathApp.Models.DbModels.Topic
+
+@{
+    ViewData["Title"] = "CreateTopic";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+
+<style>
+    .dragme{
+        cursor: move;
+    }
+</style>
+    @if (Model.Type == "lesson"){
+        <p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+        <a href="/Topics/BrowseLessons">Уроци</a> / Нов урок
+        </p>
+        <h1 style="margin-top:2rem">Нов урок</h1>
+    }
+    else{
+        <p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+        <a href="/Topics/BrowseCompetitions">Състезания</a> / Ново състезание
+        </p>
+        <h1 style="margin-top:2rem">Ново състезание</h1>
+    }
+
+<hr />
+<form method="post">
+    <fieldset>
+        <input type="hidden" name="Type" value="@Model.Type" />
+        <input type="hidden" name="Deletionstatus" value="@Model.Deletionstatus" />
+        <table style="width:100%;">
+            <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Заглавие</legend></td></tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <input type="text" name="Name" class="form-control" id="Name" value="@Model.Name">
+                    </div>
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Описание</legend></td></tr>
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <textarea name="Description" class="form-control" id="Description" rows="6">@Model.Description</textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <legend for="EventDate" style="margin-bottom:0;" class="mt-4">Дата на провеждане</legend>
+                    <input type="date" class="form-control" name="EventDate" value="@Model.EventDate.ToString("yyyy-MM-dd")" id="EventDate" style="width:40%" />
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend style="margin-bottom:0;" class="mt-4">Степени на сложност</legend></td></tr>
+            @if (Model.IdCategories != null)
+            {
+                @for (var i = 0; i < Model.IdCategories.Count(); i++)
+                {
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label for="IdCategories[@i].Grade" class="form-label mt-4">Клас</label>
+                                <select name="IdCategories[@i].Grade" value="@Model.IdCategories[i].Grade" class="form-select" id="IdCategories[@i].Grade">
+                                    <option value="0">Всички</option>
+                                    <option value="1">1 клас</option>
+                                    <option value="2">2 клас</option>
+                                    <option value="3">3 клас</option>
+                                    <option value="4">4 клас</option>
+                                    <option value="5">5 клас</option>
+                                    <option value="6">6 клас</option>
+                                    <option value="7">7 клас</option>
+                                    <option value="8">8 клас</option>
+                                    <option value="9">9 клас</option>
+                                    <option value="10">10 клас</option>
+                                    <option value="11">11 клас</option>
+                                    <option value="12">12 клас</option>
+                                </select>
+                                <script>document.getElementById("IdCategories[@i].Grade").selectedIndex = @(Model.IdCategories[i].Grade);</script>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="IdCategories[@i].Difficulty" class="form-label mt-4">Ниво</label>
+                                <select name="IdCategories[@i].Difficulty" value="@Model.IdCategories[i].Difficulty" class="form-select" id="IdCategories[@i].Difficulty">
+                                    <option value="X">Всички</option>
+                                    <option value="A">А (задачи за всички ученици)</option>
+                                    <option value="B">В (задачи за отлична подготовка)</option>
+                                    <option value="C">С (задачи за състезания)</option>
+                                </select>
+                                <script>
+                                        if ("@Model.IdCategories[i].Difficulty" == "A") document.getElementById("IdCategories[@i].Difficulty").selectedIndex = 1;
+                                        else if ("@Model.IdCategories[i].Difficulty" == "B") document.getElementById("IdCategories[@i].Difficulty").selectedIndex = 2;
+                                        else if ("@Model.IdCategories[i].Difficulty" == "C") document.getElementById("IdCategories[@i].Difficulty").selectedIndex = 3;
+                                        else document.getElementById("IdCategories[@i].Difficulty").selectedIndex = 0;
+                                </script>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            <tr>
+                <td colspan="2" style="text-align: right;">
+                    <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Topics/AddCategoryToTopicWhenCreatingTopic" />
+                    <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Topics/RemoveCategoryFromTopicWhenCreatingTopic" />
+                </td>
+            </tr>
+            <tr><td colspan="2"><legend style="margin-bottom:0;" class="mt-4">Задачи</legend></td></tr>
+            @if (Model != null && Model.MathProblems.Count() > 1)
+            {
+                <tr>
+                    <td colspan="2">
+                        @for (var i = 0; i < Model.MathProblems.Count()-1; i = i + 1)
+                        {
+                            <input type="hidden" name="MathProblems[@i].Id" value="@Model.MathProblems.ElementAt(i).Id" />
+                            <input type="hidden" name="MathProblems[@i].IdUser" value="@Model.MathProblems.ElementAt(i).IdUser" />
+                            <input type="hidden" name="MathProblems[@i].CreationDate" value="@Model.MathProblems.ElementAt(i).CreationDate.ToString("o")" />
+                            <input type="hidden" name="MathProblems[@i].UpdateDate" value="@Model.MathProblems.ElementAt(i).UpdateDate.ToString("o")" />
+                            <input type="hidden" name="MathProblems[@i].Deletionstatus" value="@Model.MathProblems.ElementAt(i).Deletionstatus" />
+                            <div data-uniqueid="modalEditMathProblem[@i]" class="edit-mathProblem-button list-group-item list-group-item-action flex-column align-items-start @(i%2==0 ? " active" : " ")">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">Задача @(i+1)</h5>
+                                </div>
+                                <input type="hidden" name="MathProblems[@i].Position" value="@Model.MathProblems[i].Position" id="MathProblems[@i].Position" />
+                                <div class="dragme" draggable="true" id="items">
+                                    <p class="mb-1">@Model.MathProblems.ElementAt(i).Conditions</p>
+                                    <small>@Model.MathProblems.ElementAt(i).Solution</small>
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="2" style="text-align:right">
+                    <button type="button" id="btncreatopicthProblem" class="btn btn-primary" style="margin-top: 1.5rem;">Добави задача</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="text-align:left">
+                    @if (Model.Type == "lesson"){<input type="submit" class="btn btn-primary" value="Назад" formaction="/Topics/BrowseLessons" style="margin-top:1.5rem;" />}
+                    else{<input type="submit" class="btn btn-primary" value="Назад" formaction="/Topics/BrowseCompetitions" style="margin-top:1.5rem;" />}
+                </td>
+                <td style="text-align:right">
+                    <input type="submit" class="btn btn-primary" value="Запази всичко" formaction="/Topics/Create" style="margin-top:1.5rem;" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <!-----------------------------------------------------------------CREATE ZADACHA------------------------------------------------------------>
+    <div class="modal" id="modalCreateMathProblem">
+        <div class="modal-dialog" role="document" style="max-width: 1000px; backdrop-filter: drop-shadow(4px 4px 10px blue)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Създай задача</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <input type="hidden" name="MathProblems[@(Model.MathProblems.Count()-1)].CreationDate" value="@Model.MathProblems.ElementAt(Model.MathProblems.Count()-1).CreationDate" />
+                <input type="hidden" name="MathProblems[@(Model.MathProblems.Count()-1)].UpdateDate" value="@Model.MathProblems.ElementAt(Model.MathProblems.Count()-1).UpdateDate" />
+                <input type="hidden" name="MathProblems[@(Model.MathProblems.Count()-1)].IdUser" value="@Model.MathProblems.ElementAt(Model.MathProblems.Count()-1).IdUser" />
+                <input type="hidden" name="MathProblems[@(Model.MathProblems.Count()-1)].Position" value="@Model.MathProblems.ElementAt(Model.MathProblems.Count()-1).Position" />
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Условие</legend>
+                                <textarea name="MathProblems[@(Model.MathProblems.Count()-1)].Conditions" class="form-control" id="ConditionsTextArea" rows="6">@Model.MathProblems[Model.MathProblems.Count()-1].Conditions</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Решение</legend>
+                                <textarea name="MathProblems[@(Model.MathProblems.Count()-1)].Solution" class="form-control" id="SolutionTextArea" rows="6">@Model.MathProblems[Model.MathProblems.Count()-1].Solution</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Отговори</legend></td></tr>
+                    @if (Model.MathProblems[Model.MathProblems.Count() - 1].Answers != null)
+                    {
+                        var idZad = Model.MathProblems.Count() - 1;
+                        @for (var a = 0; a < Model.MathProblems[idZad].Answers.Count(); a++)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="modal-body">
+                                        <label for="Answers[a].answer" class="form-label mt-4">Отговор @(a+1)</label>
+                                        <input type="text" name="MathProblems[@idZad].Answers[@a].Name" value="@Model.MathProblems[idZad].Answers[a].Name" class="form-control" id="MathProblems[@idZad].Answers[@a].Name" aria-describedby="emailHelp" placeholder="Въведете отговор">
+                                    </div>
+                                </td>
+                                <td class="modal-body">
+                                    <fieldset class="modal-body" style="margin-left:40px;margin-top:40px;">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="MathProblems[@idZad].Answers[@a].Validity" id="MathProblems[@idZad].Answers[@a].Validitytrue" value="1">
+                                                Верен
+                                            </label>
+                                            <script type="text/javascript">if("@Model.MathProblems[idZad].Answers[a].Validity"==1)document.getElementById("MathProblems[@idZad].Answers[@a].Validitytrue").checked = true;</script>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="MathProblems[@idZad].Answers[@a].Validity" id="MathProblems[@idZad].Answers[@a].Validityfalse" value="0">
+                                                Грешен
+                                            </label>
+                                            <script type="text/javascript">if("@Model.MathProblems[idZad].Answers[a].Validity"!=1)document.getElementById("MathProblems[@idZad].Answers[@a].Validityfalse").checked = true;</script>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Topics/AddAnswerToMathProblemWhenCreatingTopic/@(Model.MathProblems.Count()-1)" />
+                            <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Topics/RemoveAnswerFromMathProblemWhenCreatingTopic/@(Model.MathProblems.Count()-1)" />
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
+                    @if (Model.MathProblems[Model.MathProblems.Count() - 1].Categories != null)
+                    {
+                        var idZad = Model.MathProblems.Count() - 1;
+                        @for (var i = 0; i < Model.MathProblems[idZad].Categories.Count(); i++)
+                        {
+                            <tr>
+                                <td class="modal-body">
+                                    <div class="form-group">
+                                        <label for="IdCategories[@i].Grade" class="form-label mt-4">Клас</label>
+                                        <select name="MathProblems[@idZad].Categories[@i].Grade" value="@Model.MathProblems[idZad].Categories[i].Grade" class="form-select" id="MathProblems[@idZad].Categories[@i].Grade">
+                                            <option value="1">1 клас</option>
+                                            <option value="2">2 клас</option>
+                                            <option value="3">3 клас</option>
+                                            <option value="4">4 клас</option>
+                                            <option value="5">5 клас</option>
+                                            <option value="6">6 клас</option>
+                                            <option value="7">7 клас</option>
+                                            <option value="8">8 клас</option>
+                                            <option value="9">9 клас</option>
+                                            <option value="10">10 клас</option>
+                                            <option value="11">11 клас</option>
+                                            <option value="12">12 клас</option>
+                                        </select>
+                                        <script>document.getElementById("MathProblems[@idZad].Categories[@i].Grade").selectedIndex = @(Model.MathProblems[idZad].Categories[i].Grade - 1);</script>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label for="MathProblems[@idZad].Categories[@i].Difficulty" class="form-label mt-4">Ниво</label>
+                                        <select name="MathProblems[@idZad].Categories[@i].Difficulty" value="@Model.MathProblems[idZad].Categories[i].Difficulty" class="form-select" id="MathProblems[@idZad].Categories[@i].Difficulty">
+                                            <option value="A">А (задачи за всички ученици)</option>
+                                            <option value="B">В (задачи за отлична подготовка)</option>
+                                            <option value="C">С (задачи за състезания)</option>
+                                        </select>
+                                        <script>
+                                        if ("@Model.MathProblems[idZad].Categories[i].Difficulty" == "A") document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 0;
+                                        else if ("@Model.MathProblems[idZad].Categories[i].Difficulty" == "B") document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 1;
+                                        else document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 2;
+                                        </script>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Topics/AddCategoryToMathProblemWhenCreatingTopic/@(Model.MathProblems.Count()-1)" />
+                            <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Topics/RemoveCategoryFromMathProblemWhenCreatingTopic/@(Model.MathProblems.Count()-1)" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary btnSaveCreatedMathProblem" value="Запази задачата" formaction="/Topics/AddMathProblemToTopicWhenCreatingTopic/" />
+                    <input type="submit" id="closemodal" class="btn btn-primary" value="Отказ" formaction="/Topics/RemoveUnsavedMathProblemFromTopicWhenCreatingTopic/" />
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-----------------------------------------------------------------EDIT ZADACHI MODALS------------------------------------------------------------>
+    @for(var p = 0; p < Model.MathProblems.Count() - 1; p = p + 1)
+    {
+    <div class="modal" id="modalEditMathProblem[@p]">
+        <div class="modal-dialog" role="document" style="max-width: 1000px; backdrop-filter: drop-shadow(4px 4px 10px blue)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Редактирай задача</h3>
+                    <button type="button" class="btn-close closemodal" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <input type="hidden" name="MathProblems[@p].CreationDate" value="@Model.MathProblems.ElementAt(p).CreationDate" />
+                <input type="hidden" name="MathProblems[@p].UpdateDate" value="@Model.MathProblems.ElementAt(p).UpdateDate" />
+                <input type="hidden" name="MathProblems[@p].IdUser" value="@Model.MathProblems.ElementAt(p).IdUser" />
+                <input type="hidden" name="MathProblems[@p].Position" value="@Model.MathProblems.ElementAt(p).Position" />
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Условие</legend>
+                                <textarea name="MathProblems[@p].Conditions" class="form-control" id="ConditionsTextArea" rows="6">@Model.MathProblems[p].Conditions</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="modal-body">
+                                <legend class="mt-4" style="margin-bottom:0;">Решение</legend>
+                                <textarea name="MathProblems[@p].Solution" class="form-control" id="SolutionTextArea" rows="6">@Model.MathProblems[p].Solution</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Отговори</legend></td></tr>
+                    @if (Model.MathProblems[p].Answers != null)
+                    {
+                        var idZad = p;
+                        @for (var a = 0; a < Model.MathProblems[idZad].Answers.Count(); a++)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="modal-body">
+                                        <label for="Answers[a].answer" class="form-label mt-4">Отговор @(a+1)</label>
+                                        <input type="text" name="MathProblems[@idZad].Answers[@a].Name" value="@Model.MathProblems[idZad].Answers[a].Name" class="form-control" id="MathProblems[@idZad].Answers[@a].Name" aria-describedby="emailHelp" placeholder="Въведете отговор">
+                                    </div>
+                                </td>
+                                <td class="modal-body">
+                                    <fieldset class="modal-body" style="margin-left:40px;margin-top:40px;">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="MathProblems[@idZad].Answers[@a].Validity" id="MathProblems[@idZad].Answers[@a].Validitytrue" value="1">
+                                                Верен
+                                            </label>
+                                            <script type="text/javascript">if("@Model.MathProblems[idZad].Answers[a].Validity"==1)document.getElementById("MathProblems[@idZad].Answers[@a].Validitytrue").checked = true;</script>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="MathProblems[@idZad].Answers[@a].Validity" id="MathProblems[@idZad].Answers[@a].Validityfalse" value="0">
+                                                Грешен
+                                            </label>
+                                            <script type="text/javascript">if("@Model.MathProblems[idZad].Answers[a].Validity"!=1)document.getElementById("MathProblems[@idZad].Answers[@a].Validityfalse").checked = true;</script>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави отговор" formaction="/Topics/AddAnswerToMathProblemWhenCreatingTopic/@p" />
+                            <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/Topics/RemoveAnswerFromMathProblemWhenCreatingTopic/@p" />
+                        </td>
+                    </tr>
+                    <tr><td colspan="2" class="modal-body"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
+                    @if (Model.MathProblems[p].Categories != null)
+                    {
+                        var idZad = p;
+                        @for (var i = 0; i < Model.MathProblems[idZad].Categories.Count(); i++)
+                        {
+                            <tr>
+                                <td class="modal-body">
+                                    <div class="form-group">
+                                        <label for="IdCategories[@i].Grade" class="form-label mt-4">Клас</label>
+                                        <select name="MathProblems[@idZad].Categories[@i].Grade" value="@Model.MathProblems[idZad].Categories[i].Grade" class="form-select" id="MathProblems[@idZad].Categories[@i].Grade">
+                                            <option value="1">1 клас</option>
+                                            <option value="2">2 клас</option>
+                                            <option value="3">3 клас</option>
+                                            <option value="4">4 клас</option>
+                                            <option value="5">5 клас</option>
+                                            <option value="6">6 клас</option>
+                                            <option value="7">7 клас</option>
+                                            <option value="8">8 клас</option>
+                                            <option value="9">9 клас</option>
+                                            <option value="10">10 клас</option>
+                                            <option value="11">11 клас</option>
+                                            <option value="12">12 клас</option>
+                                        </select>
+                                        <script>document.getElementById("MathProblems[@idZad].Categories[@i].Grade").selectedIndex = @(Model.MathProblems[idZad].Categories[i].Grade - 1);</script>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label for="MathProblems[@idZad].Categories[@i].Difficulty" class="form-label mt-4">Ниво</label>
+                                        <select name="MathProblems[@idZad].Categories[@i].Difficulty" value="@Model.MathProblems[idZad].Categories[i].Difficulty" class="form-select" id="MathProblems[@idZad].Categories[@i].Difficulty">
+                                            <option value="A">А (задачи за всички ученици)</option>
+                                            <option value="B">В (задачи за отлична подготовка)</option>
+                                            <option value="C">С (задачи за състезания)</option>
+                                        </select>
+                                        <script>
+                                        if ("@Model.MathProblems[idZad].Categories[i].Difficulty" == "A") document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 0;
+                                        else if ("@Model.MathProblems[idZad].Categories[i].Difficulty" == "B") document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 1;
+                                        else document.getElementById("MathProblems[@idZad].Categories[@i].Difficulty").selectedIndex = 2;
+                                        </script>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td colspan="2" style="text-align:right" class="modal-body">
+                            <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/Topics/AddCategoryToMathProblemWhenCreatingTopic/@p" />
+                            <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/Topics/RemoveCategoryFromMathProblemWhenCreatingTopic/@p" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="modal-footer">
+                    <button type="submit" formaction="/Topics/RemoveMathProblemFromTopicWhenCreatingTopic/@p" class="btn btn-danger closemodal" style="margin-right:auto">Изтрии задача</button>
+                    <button type="button" class="btn btn-primary closemodal" data-bs-dismiss="modal">Затвори</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</form>
+
+
+<script>
+    var modal = document.getElementById("modalCreateMathProblem");
+    var btnOpenModalCreateMathProblem = document.getElementById("btncreatopicthProblem");
+    var btnCloseModalCreateMathProblem = document.getElementsByClassName("btn-close")[0];
+    var btnSaveCreatedMathProblem = document.getElementsByClassName("btnSaveCreatedMathProblem")[0];
+
+    var modalVisibility = sessionStorage.getItem("ModalCreateNewMathProblemVisibility");
+    if (modalVisibility === "block") {
+        modal.style.display = "block";
+    } else {
+        modal.style.display = "none";
+    }
+
+    btnOpenModalCreateMathProblem.onclick = function () {
+        modal.style.display = "block";
+        sessionStorage.setItem("ModalCreateNewMathProblemVisibility", "block");
+    }
+
+    btnCloseModalCreateMathProblem.onclick = function () {
+        modal.style.display = "none";
+        sessionStorage.setItem("ModalCreateNewMathProblemVisibility", "none");
+    }
+    btnSaveCreatedMathProblem.onclick = function () {
+        sessionStorage.setItem("ModalCreateNewMathProblemVisibility", "none");
+    }
+
+    var buttonsOpenModalEditMathProblem = document.getElementsByClassName("edit-mathProblem-button");
+    var modals = [];
+
+    for (var i = 0; i < buttonsOpenModalEditMathProblem.length; i++) {
+        (function(i) {
+            var modalId = buttonsOpenModalEditMathProblem[i].getAttribute("data-uniqueid");
+            var modal = document.getElementById(modalId);
+            modals.push(modal);
+
+            // Check session storage for modal visibility
+            var modalVisibility = sessionStorage.getItem("ModalEditMathProblemVisibility[" + i + "]");
+            if (modalVisibility === "block") {
+                modal.style.display = "block";
+            } else {
+                modal.style.display = "none";
+            }
+
+            // Set onclick event for opening modal
+            buttonsOpenModalEditMathProblem[i].onclick = function() {
+                modal.style.display = "block";
+                sessionStorage.setItem("ModalEditMathProblemVisibility[" + i + "]", "block");
+            };
+
+            // Set onclick events for closing modal
+            var closeButtons = modal.getElementsByClassName("closemodal");
+            for (var j = 0; j < closeButtons.length; j++) {
+                closeButtons[j].onclick = function() {
+                    modal.style.display = "none";
+                    sessionStorage.setItem("ModalEditMathProblemVisibility[" + i + "]", "none");
+                };
+            }
+        })(i); // Pass the current value of i to the IIFE
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        for (var i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = "none";
+                sessionStorage.setItem("ModalEditMathProblemVisibility[" + i + "]", "none");
+            }
+        }
+        if (event.target == modal) {
+            modal.style.display = "none";
+            sessionStorage.setItem("ModalCreateNewMathProblemVisibility", "none");
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+        function handleDragStart(e) {
+            this.style.opacity = '0.4';
+            dragSrcEl = this;
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+
+
+            items.forEach(function (item) {
+                item.classList.remove('over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+
+            if (dragSrcEl !== this) {
+                dragSrcEl.innerHTML = this.innerHTML;
+                this.innerHTML = e.dataTransfer.getData('text/html');
+            }
+            return false;
+        }
+
+        let items = document.querySelectorAll('.dragme');
+        items.forEach(function (item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('drop', handleDrop);
+        });
+    });
+</script>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewBag.Clear();
+    </script>
+}
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

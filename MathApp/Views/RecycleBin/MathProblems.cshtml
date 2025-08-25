@@ -1,0 +1,103 @@
+﻿@model IEnumerable<MathApp.Models.DbModels.MathProblem>
+
+@{
+    ViewData["Title"] = "MathProblems";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<style>
+    #mywbtn {
+        background-color: #fff;
+    }
+    #mywbtn:hover {
+        background-color: #78c2ad;
+    }
+    #mygbtn:hover {
+        color: #78c2ad;
+        background-color: #fff;
+        border-color: #78c2ad;
+    }
+</style>
+
+<div class="list-group" style="margin-top:2rem">
+
+@if (Model != null)
+{
+    @for (var i = 0; i < Model.Count(); i = i + 1)
+    {
+        <div class="list-group-item list-group-item-action flex-column align-items-start @(i%2==0 ? "active":"")">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Задача @(i+1)</h5>
+                <small>@Model.ElementAt(i).UpdatedTimeAgo</small>
+            </div>
+            <p class="mb-1">@Model.ElementAt(i).Conditions</p>
+            <a asp-action="RecoverMathProblem" asp-route-id="@Model.ElementAt(i).Id" id="@(i%2==0 ? "mywbtn":"mygbtn")" class="btn @(i%2==0 ? "btn-outline-primary":"btn-primary") btn-sm">Възстанови задачата</a>
+            <button type="button" id="@(i%2==0 ? "mywbtn":"mygbtn")" data-id="@Model.ElementAt(i).Id" class="btn @(i%2==0 ? "btn-outline-primary":"btn-primary") btn-sm delete-button" data-bs-toggle="modal" data-bs-target="#mymodal">Изтрии задачата</button>
+        </div>
+    }
+}
+</div>
+
+<div class="modal" id="mymodal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Изтриване на задачата</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Сигурни ли сте, че искате перманентно да изтриете задачата? Това действие не може да бъде възстановено.</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" asp-action="DeleteMathProblem" method="post">
+                    <input type="hidden" id="mathProblemId" name="id" value="">
+                    <button type="submit" id="confirmDeleteButton" class="btn btn-danger">Да, искам</button>
+                </form>
+                <button type="button" id="closemodal" class="btn btn-primary" data-bs-dismiss="modal">Не, не искам</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById("mymodal");
+    var span1 = document.getElementsByClassName("btn-close")[0];
+    var span2 = document.getElementById("closemodal");
+
+    var deleteButtons = document.querySelectorAll('.delete-button');
+    var confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    var mathProblemIdInput = document.getElementById('mathProblemId');
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            modal.style.display = "block";
+            var mathProblemId = this.getAttribute('data-id');
+            mathProblemIdInput.value = mathProblemId;
+        });
+    });
+    span1.onclick = function() {
+        modal.style.display = "none";
+    }
+    span2.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+});
+</script>

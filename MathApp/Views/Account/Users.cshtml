@@ -1,0 +1,326 @@
+﻿@model MathApp.Models.BusinessModels.SearchUsers
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<style>
+    #mywbtn {
+        background-color: #fff;
+    }
+    #mywbtn:hover {
+        background-color: #78c2ad;
+    }
+    #mygbtn:hover {
+        color: #78c2ad;
+        background-color: #fff;
+        border-color: #78c2ad;
+    }
+</style>
+<div style="margin-bottom:1.5rem">
+    <table style="margin-top:5rem;width:100%;">
+        <tr>
+            <td><h1>Потребители</h1></td>
+            <td style="text-align:right"><a asp-action="CreateUser" target="_parent"><button class="btn btn-primary">Създай нов потребител</button></a></td>
+        </tr>
+    </table>
+    <hr />
+</div>
+<!--Search And Sort Filters-->
+<table style="width: 100%; margin-bottom: 1.5rem">
+<form method="post">    
+    <tr>
+        <td colspan="3" style="text-align:left"><button type="button" onclick="mySearchFunction()" class="btn btn-outline-primary" style="margin-bottom:1.5rem">Търсене</button></td>
+        <td style="text-align:right"><button formaction="/Account/Sort/" class="btn btn-outline-primary" style="margin-bottom:1.5rem">Сортиране</button></td>
+        
+            <td style="text-align:right;width:25%">
+                    <select name="criteria.sortBy" Id="criteria.sortBy" value="@Model.criteria.sortBy" class="form-select" style="margin-bottom:1.5rem">
+                        <option value="creation_date_descending">По Дата На Създаване Низходящо</option>
+                        <option value="creation_date_ascending">По Дата На Създаване Възходящо</option>
+                        <option value="name_descending">По Име Низходящо</option>
+                        <option value="name_ascending">По Име Възходящо</option>
+                        <option value="username_ascending">По Потребителско Име Низходящо</option>
+                        <option value="username_descending">По Потребителско Име Възходящо</option>
+                    </select>
+                    <script>
+                        if ("@Model.criteria.sortBy" == "creation_date_ascending") document.getElementById("criteria.sortBy").selectedIndex = 1;
+                        else if ("@Model.criteria.sortBy" == "name_descending") document.getElementById("criteria.sortBy").selectedIndex = 2;
+                        else if ("@Model.criteria.sortBy" == "name_ascending") document.getElementById("criteria.sortBy").selectedIndex = 3;
+                        else if ("@Model.criteria.sortBy" == "username_ascending") document.getElementById("criteria.sortBy").selectedIndex = 4;
+                        else if ("@Model.criteria.sortBy" == "username_descending") document.getElementById("criteria.sortBy").selectedIndex = 5;
+                        else document.getElementById("criteria.sortBy").selectedIndex = 0;
+                    </script>
+            </td>
+    </tr>
+    <tbody  id="searchform" style="display:none; width:158%;">
+    <tr>
+        <td colspan="5">
+            <div class="form-floating mb-3">
+                <select name="criteria.idRole" value="@Model.criteria.idRole" class="form-select" Id="criteria.idRole" style="display:flex;align-items:center;padding:0 10px;">
+                    <option value="0">Всички роли</option>
+                    <option value="1">Администратори</option>
+                    <option value="2">Учители</option>
+                </select>
+                <script>
+                    if ("@Model.criteria.idRole" == "1") document.getElementById("criteria.idRole").selectedIndex = 1;
+                    else if ("@Model.criteria.idRole" == "2") document.getElementById("criteria.idRole").selectedIndex = 2;
+                    else document.getElementById("criteria.idRole").selectedIndex = 0;
+                </script>
+            </div>
+        </td>
+    </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.username" class="form-control" id="searchusername" value="@Model.criteria.username" placeholder="username">
+                    <label for="floatingInput">Търси измежду потребителските имена</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.name" class="form-control" id="searchname" value="@Model.criteria.name" placeholder="name">
+                    <label for="floatingInput">Търси измежду пълните имена</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.email" class="form-control" id="searchemail" value="@Model.criteria.email" placeholder="email">
+                    <label for="floatingInput">Търси измежду имейлите</label>
+                </div>
+            </td>
+        </tr>
+        <tr><td colspan="5"><div class="form-label mt-4">Търси според статус на акаунта</div></td></tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <select name="criteria.isDisabled" Id="criteria.isDisabled" value="@Model.criteria.isDisabled" class="form-select" style="margin-bottom:1.5rem">
+                        <option value="2">Всички</option>
+                        <option value="0">Активирани</option>
+                        <option value="1">Деактивирани</option>
+                    </select>
+                    <script>
+                        if ("@Model.criteria.isDisabled" == "0") document.getElementById("criteria.isDisabled").selectedIndex = 1;
+                        else if ("@Model.criteria.isDisabled" == "1") document.getElementById("criteria.isDisabled").selectedIndex = 2;
+                        else document.getElementById("criteria.isDisabled").selectedIndex = 0;
+                    </script>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-label mt-4">Период на създаване на акаунта</div>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">От</div>
+            </td>
+            <td>
+                <input type="date" class="form-control" name="criteria.fromDateCreated" value="@Model.criteria.fromDateCreated" id="criteria.fromDateCreated"/>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">До</div>
+            </td>
+            <td>
+                <input type="date" class="form-control" name="criteria.toDateCreated" value="@Model.criteria.toDateCreated" id="criteria.toDateCreated"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="submit" value="Търси" class="btn btn-primary" formaction="/Account/Search/" style="width: 100%; margin-top: 1.5rem">
+                </div>
+            </td>
+        </tr>
+</tbody>
+</form>
+
+</table>
+<!--List of Users-->
+
+
+<div class="container">
+    @if (Model != null)
+    {
+        @for (var i = 0; i < Model.users.Count(); i = i + 1)
+        {<a asp-action="EditUser" asp-route-id="@Model.users.ElementAt(i).Id" class="list-group-item list-group-item-action flex-column align-items-start @(i % 2 == 0 ? "active" : " ")">
+        <div class="row"><!--align-items-center-->
+            
+                <input type="hidden" name="Model.users.ElementAt(@i).Id" value="@Model.users.ElementAt(i).Id" />
+                    @if (@Model.users.ElementAt(i).IdRole==1)
+                    {
+                        <div class="col text-break">Администратор</div>
+                    }
+                    else
+                    {
+                        <div class="col text-break">Учител</div>
+                    }
+                <div class="col text-break">@Model.users.ElementAt(i).Name</div>
+                <div class="col text-break">@Model.users.ElementAt(i).Username</div>
+                        @if (@Model.users.ElementAt(i).EmailConfirmation != 0)
+                        {
+                            <div class="col text-break"> @Model.users.ElementAt(i).Email - Потвърден</div>
+                        }
+                        else
+                        {
+                <div class="col text-break">@Model.users.ElementAt(i).Email - Непотвърден</div>
+                        }
+            <div class="col text-break">Създаден на @Model.users.ElementAt(i).CreationDate.ToString("dd.MM.yyyy HH:mm")</div>
+            <div class="col"></div>
+            <div class="col align-self-center">
+                    @if (@Model.users.ElementAt(i).IdRole!=1)
+                    {
+                    <button type="button" id="toggleButton_@Model.users.ElementAt(i).Id" class="btn @(i % 2 == 0 ? "btn-outline-primary" : "btn-primary") btn-sm toggle-button" onclick="toggleUserDisabled(@Model.users.ElementAt(i).Id)">
+                                    @(@Model.users.ElementAt(i).IsDisabled != 0 ? "Enable" : "Disable")
+                                </button>
+
+                    <button type="button" id="@(i % 2 == 0 ? "mywbtn" : "mygbtn")" data-id="@Model.users.ElementAt(i).Id" class="btn @(i % 2 == 0 ? "btn-outline-primary" : "btn-primary") btn-sm delete-button" data-bs-toggle="modal" data-bs-target="#DeleteUserModal">Изтрии</button>
+                    }
+            </div>
+            
+        </div></a>
+        }
+    }
+    </div>
+
+<div class="modal" id="DeleteUserModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Изтриване на потребителя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Сигурни ли сте, че искате перманентно да изтриете потребителя? Това действие не може да бъде възстановено.</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" asp-action="DeleteUser" method="post">
+                    <input type="hidden" id="userId" name="id" value="">
+                    <button type="submit" id="confirmDeleteButton" class="btn btn-danger">Да, искам</button>
+                </form>
+                <button type="button" id="closemodal" class="btn btn-primary" data-bs-dismiss="modal">Не, не искам</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Separating the fuction the <a> tag from the buttons-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the link from being followed
+            event.preventDefault();
+            const userId = button.id.split('_')[1];
+            toggleUserDisabled(userId);
+        });
+    });
+
+    document.querySelectorAll('.delete-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the link from being followed
+            event.preventDefault();
+            const userId = button.getAttribute('data-id');
+            // Handle delete action, e.g., open modal
+        });
+    });
+});
+</script>
+
+<!--Opening and closing the delete modal-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById("DeleteUserModal");
+    var span1 = document.getElementsByClassName("btn-close")[0];
+    var span2 = document.getElementById("closemodal");
+
+    var deleteButtons = document.querySelectorAll('.delete-button');
+    var confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    var userIdInput = document.getElementById('userId');
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            modal.style.display = "block";
+            var userId = this.getAttribute('data-id');
+            userIdInput.value = userId;
+        });
+    });
+    span1.onclick = function() {
+        modal.style.display = "none";
+    }
+    span2.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+});
+</script>
+<!--The Disable button-->
+<script>
+    // Assuming your user list is rendered with an id
+    let users = @Html.Raw(Json.Serialize(Model.users));
+
+    function toggleUserDisabled(userId) {
+        let user = users.find(u => u.id === userId);
+        if (user) {
+            user.isDisabled = user.isDisabled === 1 ? 0 : 1;
+            
+            // Update the button text or other UI elements if necessary
+            let button = document.getElementById('toggleButton_' + userId);
+            if (button) {
+                button.textContent = user.isDisabled ? 'Enable' : 'Disable';
+            }
+
+            // Send the updated state to the server
+            $.ajax({
+                url: '/Account/ToggleUserDisabled',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    Id: userId,
+                    IsDisabled: user.isDisabled
+                }),
+                success: function (data) {
+                    console.log('Success:', data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    // Optionally revert the UI change if the server update fails
+                    user.isDisabled = user.isDisabled === 1 ? 0 : 1;
+                    if (button) {
+                        button.textContent = user.isDisabled ? 'Enable' : 'Disable';
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+<!--The Searching form-->
+<script>
+    document.getElementById("searchform").style.display = "none";
+    function mySearchFunction() {
+        var x = document.getElementById("searchform");
+        if (x.style.display === "none") {
+            x.style.display = "table";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
+
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}

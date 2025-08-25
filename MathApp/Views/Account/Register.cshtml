@@ -1,62 +1,57 @@
-﻿@model MathApp.Models.User
+﻿@model MathApp.Models.DbModels.User
 
 @{
     ViewData["Title"] = "Register";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script type="text/javascript">
-function validatePassword() {
-    var p = document.getElementById('password').value,
-        errors = [];
-    if (p.length < 8) {
-        errors.push("Your password must be at least 8 characters"); 
-    }
-    if (p.search(/[a-z]/i) < 0) {
-        errors.push("Your password must contain at least one letter.");
-    }
-    if (p.search(/[0-9]/) < 0) {
-        errors.push("Your password must contain at least one digit."); 
-    }
-    if (errors.length > 0) {
-        alert(errors.join("\n"));
-        return false;
-    }
-    return true;
-}
-</script>
+<script src="~/Scripts/site.js"></script>
+
+
 <h1 style="margin-top:2rem">Регистрация</h1>
 
 <div class="form-group row">
     <hr />
-    <form method="post" action="Register" onsubmit="return validatePassword()">
-    <table width="90%" align="center">
+    <form name="RegisterForm" method="post" action="Register" onsubmit="return validateUserRegistration()">
+    <table width="65%" align="center">
         <tr>
             <td>
                 <label class="form-label mt-4">Потребителско име:</label>
-                <input type="text" name="Username" class="form-control" id="user.Username" placeholder = "Въведете потребителско име">
+                <input type="text" name="Username" class="form-control" id="Username" placeholder = "Въведете потребителско име">
+                <div id="usernameError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="form-label mt-4">Име:</label>
+                <input type="text" name="Name" class="form-control" id="Name" placeholder = "Въведете вашето име">
+                <div id="nameError" style="color:red"></div>
             </td>
         </tr>
         <tr>
             <td>
                 <label class="form-label mt-4">Имейл:</label>
-
-                <input type="text" name="Email" class="form-control" id="user.Email" placeholder = "Въведете имейл">
-
+                <input type="text" name="Email" class="form-control" id="Email" placeholder = "Въведете имейл">
+                <div id="emailError" style="color:red"></div>
+                <input type="hidden" name="EmailConfirmation" value=0>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <label class="form-label mt-4">Парола:</label>
+                <input type="password" name="Password" class="form-control" id="Password" placeholder = "Въведете парола">
+                <div id="passwordError" style="color:red"></div>
             </td>
         </tr>
         <tr>
             <td>
-                <input type="text" name="Password" class="form-control" id="password" placeholder = "Въведете парола">
-
                 <label class="form-label mt-4">Повторете паролата:</label>
+                <input type="password" class="form-control" id="RepeatPassword"  placeholder = "Повторете паролата">
+                <div id="repeatPasswordError" style="color:red"></div>
             </td>
         </tr>
         <tr>
             <td>
-                <input type="text" class="form-control" id="repeatPassword"  placeholder = "Повторете паролата">
-
-                <input type="submit" id="submitbtn" class="btn btn-primary" value="Регистрация" style="margin-top:2rem"/>
+                <input type="submit" id="submitbtn" class="btn btn-primary" value="Регистрация" style="margin-top:2rem"/>          
             </td>
         </tr>
     </table>

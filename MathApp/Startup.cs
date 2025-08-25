@@ -2,9 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MathApp.Middleware;
+using MathApp.Models.DbModels;
+using MathApp.Services;
+using MathApp.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +28,18 @@ namespace MathApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<math_appContext>(options =>
+            {
+                if (!options.IsConfigured)
+                {
+                    options.UseMySql("server=localhost;user=root;database=math_app;port=3307;password=%s1WnX6*", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.26-mysql"));
+                }
+            });
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IHashService, HashService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IMathProblemService, MathProblemService>();
+            services.AddScoped<ITopicService, TopicService>();
             services.AddControllersWithViews();
             services.AddSession(options => { options.IdleTimeout = TimeSpan.FromHours(6); } );
         }
@@ -44,6 +61,7 @@ namespace MathApp
             app.UseStaticFiles();
 
             app.UseSession();
+            app.UseMiddleware<UserSessionMiddleware>();
 
             app.UseRouting();
 

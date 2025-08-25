@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using MathApp.Models.DbModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -136,7 +136,7 @@ namespace MathApp
 
             modelBuilder.Entity<JunctionZadachiAnswers>(entity =>
             {
-                entity.HasKey(e => new { e.Zadacha, e.Answer })
+                entity.HasKey(e => new { e.MathProblem, e.Answer })
                     .HasName("PRIMARY");
 
                 entity.ToTable("junction_zadachi_answers");
@@ -144,24 +144,24 @@ namespace MathApp
                 entity.HasIndex(e => e.Answer)
                     .HasName("fkans_idx");
 
-                entity.Property(e => e.Zadacha).HasColumnName("zadacha");
+                entity.Property(e => e.MathProblem).HasColumnName("zadacha");
 
                 entity.Property(e => e.Answer).HasColumnName("answer");
 
-                entity.HasOne(d => d.AnswerNavigation)
+                /*entity.HasOne(d => d.AnswerNavigation)
                     .WithMany(p => p.JunctionZadachiAnswers)
                     .HasForeignKey(d => d.Answer)
                     .HasConstraintName("fkans");
 
-                entity.HasOne(d => d.ZadachaNavigation)
+                entity.HasOne(d => d.MathProblemNavigation)
                     .WithMany(p => p.JunctionZadachiAnswers)
-                    .HasForeignKey(d => d.Zadacha)
-                    .HasConstraintName("fkzad");
+                    .HasForeignKey(d => d.MathProblem)
+                    .HasConstraintName("fkzad");*//*
             });
 
             modelBuilder.Entity<JunctionZadachiCategories>(entity =>
             {
-                entity.HasKey(e => new { e.Zadacha, e.Category })
+                entity.HasKey(e => new { e.MathProblem, e.Category })
                     .HasName("PRIMARY");
 
                 entity.ToTable("junction_zadachi_categories");
@@ -169,7 +169,7 @@ namespace MathApp
                 entity.HasIndex(e => e.Category)
                     .HasName("fkcat_idx");
 
-                entity.Property(e => e.Zadacha).HasColumnName("zadacha");
+                entity.Property(e => e.MathProblem).HasColumnName("zadacha");
 
                 entity.Property(e => e.Category).HasColumnName("category");
 
@@ -178,15 +178,15 @@ namespace MathApp
                     .HasForeignKey(d => d.Category)
                     .HasConstraintName("fkcat");
 
-                entity.HasOne(d => d.ZadachaNavigation)
+                entity.HasOne(d => d.MathProblemNavigation)
                     .WithMany(p => p.JunctionZadachiCategories)
-                    .HasForeignKey(d => d.Zadacha)
+                    .HasForeignKey(d => d.MathProblem)
                     .HasConstraintName("kdzad2");
             });
 
             modelBuilder.Entity<JunctionZadachiImages>(entity =>
             {
-                entity.HasKey(e => new { e.Zadacha, e.Image, e.Place })
+                entity.HasKey(e => new { e.MathProblem, e.Image, e.Place })
                     .HasName("PRIMARY");
 
                 entity.ToTable("junction_zadachi_images");
@@ -194,7 +194,7 @@ namespace MathApp
                 entity.HasIndex(e => e.Image)
                     .HasName("fkim_idx");
 
-                entity.Property(e => e.Zadacha).HasColumnName("zadacha");
+                entity.Property(e => e.MathProblem).HasColumnName("zadacha");
 
                 entity.Property(e => e.Image).HasColumnName("image");
 
@@ -205,25 +205,25 @@ namespace MathApp
                     .HasForeignKey(d => d.Image)
                     .HasConstraintName("fkim");
 
-                entity.HasOne(d => d.ZadachaNavigation)
+                entity.HasOne(d => d.MathProblemNavigation)
                     .WithMany(p => p.JunctionZadachiImages)
-                    .HasForeignKey(d => d.Zadacha)
+                    .HasForeignKey(d => d.MathProblem)
                     .HasConstraintName("fkzad3");
             });
 
             modelBuilder.Entity<JunctionZadachiTemi>(entity =>
             {
-                entity.HasKey(e => new { e.Tema, e.Zadacha })
+                entity.HasKey(e => new { e.Tema, e.MathProblem })
                     .HasName("PRIMARY");
 
                 entity.ToTable("junction_zadachi_temi");
 
-                entity.HasIndex(e => e.Zadacha)
+                entity.HasIndex(e => e.MathProblem)
                     .HasName("fkzad4_idx");
 
                 entity.Property(e => e.Tema).HasColumnName("tema");
 
-                entity.Property(e => e.Zadacha).HasColumnName("zadacha");
+                entity.Property(e => e.MathProblem).HasColumnName("zadacha");
 
                 entity.Property(e => e.Number).HasColumnName("number");
 
@@ -232,27 +232,27 @@ namespace MathApp
                     .HasForeignKey(d => d.Tema)
                     .HasConstraintName("fktem");
 
-                entity.HasOne(d => d.ZadachaNavigation)
+                entity.HasOne(d => d.MathProblemNavigation)
                     .WithMany(p => p.JunctionZadachiTemi)
-                    .HasForeignKey(d => d.Zadacha)
+                    .HasForeignKey(d => d.MathProblem)
                     .HasConstraintName("fkzad4");
             });
 
             modelBuilder.Entity<Temi>(entity =>
             {
-                entity.HasKey(e => e.IdTema)
+                entity.HasKey(e => e.IdTopic)
                     .HasName("PRIMARY");
 
-                entity.ToTable("temi");
+                entity.ToTable("topics");
 
-                entity.HasIndex(e => e.IdTema)
+                entity.HasIndex(e => e.IdTopic)
                     .HasName("id_tema_UNIQUE")
                     .IsUnique();
 
                 entity.HasIndex(e => e.User)
                     .HasName("fkuser1_idx");
 
-                entity.Property(e => e.IdTema).HasColumnName("id_tema");
+                entity.Property(e => e.IdTopic).HasColumnName("id_tema");
 
                 entity.Property(e => e.CreationDate).HasColumnName("creation_date");
 
@@ -327,7 +327,7 @@ namespace MathApp
                 entity.HasKey(e => e.IdZadacha)
                     .HasName("PRIMARY");
 
-                entity.ToTable("zadachi");
+                entity.ToTable("mathProblems");
 
                 entity.HasIndex(e => e.IdZadacha)
                     .HasName("id_zadacha_UNIQUE")
@@ -353,7 +353,7 @@ namespace MathApp
 
                 entity.Property(e => e.User).HasColumnName("user");
 
-                entity.Property(e => e.Uslovie)
+                entity.Property(e => e.Conditions)
                     .IsRequired()
                     .HasColumnName("uslovie")
                     .HasMaxLength(3000);
@@ -371,3 +371,4 @@ namespace MathApp
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
+*/

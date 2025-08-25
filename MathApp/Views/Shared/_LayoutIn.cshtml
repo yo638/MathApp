@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userFromSession = Context.Items["User"] as MathApp.Models.DbModels.User;
+    var IdRoleUser = userFromSession?.IdRole;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,15 +15,15 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
-    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-1.2.6.min.js") %>"></script>
-    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-ui-personalized-1.6rc4.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-1.2.6.min.js") %></script>
+    <script type="text/javascript" src="<%= ResolveUrl(" ~ /Scripts/jquery-ui-personalized-1.6rc4.min.js") %></script>
     <script>
         $('html').on('click', function () {
             parent.$('#frame').trigger('click');
         });
     </script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
@@ -30,25 +34,68 @@
 
                 <div class="collapse navbar-collapse" id="navbarColor01">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Browse">
-                                Моите задачи
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="Browse">
-                                Теми
-                            </a>
-                        </li>
-
+                        @if (IdRoleUser != null && IdRoleUser.ToString() == "1")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Browse">
+                                    Задачи
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="BrowseLessons">
+                                    Уроци
+                                </a>
+                            </li>            
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="BrowseCompetitions">
+                                    Състезания
+                                </a>
+                            </li>        
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="BrowseUsers">
+                                    Потребители
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="" asp-controller="Zadachi" asp-action="Browse">
+                                    Моите задачи
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="BrowseLessons">
+                                    Моите Уроци
+                                </a>
+                            </li>  
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Temi" asp-action="BrowseCompetitions">
+                                    Моите Състезания
+                                </a>
+                            </li>  
+                        }
                     </ul>
                     <div class="d-flex">
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="RecycleBin" asp-action="Zadachi">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="recycleBinDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Кошче
                                 </a>
-
+                                <ul class="dropdown-menu" aria-labelledby="recycleBinDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="RecycleBin" asp-action="Zadachi">Задачи</a>
+                                    </li>
+                                     <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="RecycleBin" asp-action="Temi">Уроци и състезания</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="EditMyUser">
+                                    Профил
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout">
                                     Изход
@@ -66,13 +113,22 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top mt-auto text-muted" style="padding: 4px 0;">
         <div class="container">
-            &copy; 2022 - MathApp
+            &copy; 2024 - MathApp
         </div>
     </footer>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl)
+            })
+        });
+    </script>   
+@RenderSection("Scripts", required: false)
 </body>
 </html>
+

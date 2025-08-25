@@ -1,0 +1,116 @@
+﻿@model MathApp.Models.DbModels.User
+
+@{
+    ViewData["Title"] = "EditUser";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<script src="~/Scripts/site.js"></script>
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}
+@if (ViewBag.UserRoleId==1) {
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a href="/Account/BrowseUsers">Потребители</a> / Редактиране на потребител
+</p>
+}
+
+<h1 style="margin-top:2rem">Редактиране</h1>
+
+<div class="form-group row">
+    <hr />
+    
+    <table width="65%" align="center">
+        <form name="RegisterForm" method="post" onsubmit="return validateUserRegistration()">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        @if (ViewBag.UserRoleId==1) {
+            <tr>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label for="IdRole" class="form-label mt-4">Роля</label>
+                        <select name="IdRole" value="@Model.IdRole" class="form-select" id="IdRole">
+                            <option value="1">Администратор</option>
+                            <option value="2">Учител</option>
+                        </select>
+                        <script>document.getElementById("IdRole").selectedIndex = @(Model.IdRole-1);</script>
+                    </div>
+                </td>
+            </tr>         
+        }
+        else{
+            <input type="hidden" name="IdRole" value="@Model.IdRole" />
+        }
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Потребителско име:</label>
+                <input type="text" name="Username" class="form-control" id="Username" placeholder = "Въведете потребителско име" value="@Model.Username">
+                <div id="usernameError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Име:</label>
+                <input type="text" name="Name" class="form-control" id="Name" placeholder = "Въведете пълно име" value="@Model.Name">
+                <div id="nameError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Имейл:</label>
+                <input type="text" name="Email" class="form-control" id="Email" placeholder = "Въведете имейл" value="@Model.Email">
+                <div id="emailError" style="color:red"></div>
+                <input type="hidden" name="EmailConfirmation" value=0>
+            </td>
+        </tr>
+        <tr>
+
+            <td colspan="2" style="text-align:right">
+                <input type="submit" id="submitbtn" class="btn btn-primary" value="Запазване на промените" formaction="/Account/EditUser" style="margin-top:1.5rem;"/>
+            </td>
+        </tr>
+    </form>
+    <form name="RegisterForm" method="post" onsubmit="return validateUserRegistration()">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="IdRole" value="@Model.IdRole" />
+        <input type="hidden" name="Username" value="@Model.Username" />
+        <input type="hidden" name="Name" value="@Model.Name" />
+        <input type="hidden" name="Email" value="@Model.Email" />
+        <tr><td colspan="2"><legend style="margin-bottom:0;" class="mt-4">Смяна на паролата</legend></td></tr>
+                <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Стара парола:</label>
+                <input type="text" name="OldPassword" class="form-control" placeholder = "Въведете старата парола">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Нова парола:</label>
+                <input type="text" name="Password" class="form-control" id="Password" placeholder = "Въведете новата парола">
+                <div id="passwordError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Повторете новата парола:</label>
+                <input type="text" name="RepeatPassword" class="form-control" id="RepeatPassword"  placeholder = "Повторете новата парола">
+                <div id="repeatPasswordError" style="color:red"></div>
+            </td>
+        </tr>
+                <tr>
+                    <td style="text-align:left">
+                    @if (ViewBag.UserRoleId==1) {
+                        <input type="submit" class="btn btn-primary" value="Назад" formaction="/Account/BrowseUsers" style="margin-top:1.5rem;" />
+                    }
+                    </td>
+                    <td style="text-align:right">
+                        <input type="submit" id="submitbtn" class="btn btn-primary" value="Запазване на паролата" formaction="/Account/ChangeUserPassword" style="margin-top:1.5rem;"/>
+                    </td>
+                </tr>
+    </form>
+    </table>
+    
+</div>
+

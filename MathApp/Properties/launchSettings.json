@@ -14,7 +14,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "jsWebView2Debugging": false
+      "jsWebView2Debugging": false,
+      "nativeDebugging": false
     },
     "MathApp": {
       "commandName": "Project",

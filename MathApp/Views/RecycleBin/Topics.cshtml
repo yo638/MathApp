@@ -1,0 +1,157 @@
+﻿@model IEnumerable<MathApp.Models.DbModels.Topic>
+
+@{
+    ViewData["Title"] = "Topics";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<style>
+    #mywbtn {
+        background-color: #fff;
+    }
+    #mywbtn:hover {
+        background-color: #78c2ad;
+    }
+    #mygbtn:hover {
+        color: #78c2ad;
+        background-color: #fff;
+        border-color: #78c2ad;
+    }
+</style>
+
+<div class="list-group" style="margin-top:2rem">
+
+@if (Model != null)
+{
+    @for (var i = 0; i < Model.Count(); i = i + 1)
+    {
+        <div class="list-group-item list-group-item-action flex-column align-items-start @(i%2==0 ? "active":"")">
+            <div class="d-flex w-100 justify-content-between">
+                @if (Model.ElementAt(i).Type == "lesson"){ <h5 class="mb-1">@(i + 1) Урок</h5>}
+                else{<h5 class="mb-1">@(i + 1) Състезание</h5>}
+                <small>@Model.ElementAt(i).UpdatedTimeAgo</small>
+            </div>
+            <p class="mb-1">@Model.ElementAt(i).Name</p>
+            <small>@Model.ElementAt(i).Description</small>
+            <button type="button" data-id="@Model.ElementAt(i).Id" id="@(i%2==0 ? "mywbtn":"mygbtn")" class="btn @(i%2==0 ? "btn-outline-primary":"btn-primary") btn-sm recover-button" data-bs-toggle="modal" data-bs-target="#modalRecover">Възстанови</button>
+            <button type="button" data-id="@Model.ElementAt(i).Id" id="@(i%2==0 ? "mywbtn":"mygbtn")" class="btn @(i%2==0 ? "btn-outline-primary":"btn-primary") btn-sm delete-button" data-bs-toggle="modal" data-bs-target="#modalDelete">Изтрии</button>
+        </div>
+    }
+}
+</div>
+
+<div class="modal" id="modalDelete">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Изтриване</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Сигурни ли сте, че искате перманентно да изтриете избраното съдържание? Това действие не може да бъде възстановено.</p>
+            </div>
+            <form id="deleteForm" method="post" style="width:100%">
+            <div class="modal-footer" style="display:flex; flex-wrap:wrap;">
+                
+                    <input type="hidden" id="topicIdDelete" name="id" value="">
+                    <button type="submit" id="confirmDeleteButton" asp-action="DeleteTopic" class="btn btn-danger" style="order:1; margin:5px; margin-right:auto;">Изтрии само урока/състезанието</button>
+                    <button type="submit" id="confirmDeleteButton" asp-action="DeleteTopicAndMathProblems" class="btn btn-danger" style="order:1; margin:5px; margin-right:auto;">Изтрии и него и задачите му</button>
+                
+                <button type="button" id="closeDeletionModal" class="btn btn-primary" data-bs-dismiss="modal" style="order:2; margin:5px;">Не, не искам</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalRecover">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Възстановяване</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Искате ли да възстановите избраното съдържание?</p>
+            </div>
+            <form id="deleteForm" method="post" style="width:100%">
+                <div class="modal-footer" style="display:flex; flex-wrap:wrap;">
+                        <input type="hidden" id="topicIdRecover" name="id" value="">
+                        <button type="submit" id="confirmRecoverButton" asp-action="RecoverTopic" class="btn btn-danger" style="order:1; margin:5px; margin-right:auto;">Възстанови само урока/състезанието</button>
+                        <button type="submit" id="confirmRecoverButton" asp-action="RecoverTopicAndMathProblems" class="btn btn-danger" style="order:1; margin:5px;margin-right:auto;">Възстанови и него и задачите му</button>
+                
+                    <button type="button" id="closeRecoverModal" class="btn btn-primary" data-bs-dismiss="modal" style="order:2; margin:5px;">Затвори</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    var modalDeleteTopic = document.getElementById("modalDelete");
+    var btnCloseDeleteModal1 = document.getElementsByClassName("btn-close")[0];
+    var btnCloseDeleteModal2 = document.getElementById("closeDeletionModal");
+
+    var deleteButtons = document.querySelectorAll('.delete-button');
+    var confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    var topicIdInputDelete = document.getElementById('topicIdDelete');
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            modalDeleteTopic.style.display = "block";
+            var topicId = this.getAttribute('data-id');
+            topicIdInputDelete.value = topicId;
+        });
+    });
+    btnCloseDeleteModal1.onclick = function() {
+        modalDeleteTopic.style.display = "none";
+    }
+    btnCloseDeleteModal2.onclick = function() {
+        modalDeleteTopic.style.display = "none";
+    }
+
+
+    var modalRecoverTopic = document.getElementById("modalRecover");
+    var btnRecoverDeleteModal1 = document.getElementsByClassName("btn-close")[1];
+    var btnRecoverDeleteModal2 = document.getElementById("closeRecoverModal");
+
+    var recoverButtons = document.querySelectorAll('.recover-button');
+    var confirmRecoverButton = document.getElementById('confirmRecoverButton');
+    var topicIdInputRecover = document.getElementById('topicIdRecover');
+
+    recoverButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            modalRecoverTopic.style.display = "block";
+            var topicId = this.getAttribute('data-id');
+            topicIdInputRecover.value = topicId;
+        });
+    });
+    btnRecoverDeleteModal1.onclick = function() {
+        modalRecoverTopic.style.display = "none";
+    }
+    btnRecoverDeleteModal2.onclick = function() {
+        modalRecoverTopic.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modalDeleteTopic) {
+            modalDeleteTopic.style.display = "none";
+        }
+        else if (event.target == modalRecoverTopic) {
+            modalRecoverTopic.style.display = "none";
+        }
+    }
+});
+</script>

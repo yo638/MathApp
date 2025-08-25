@@ -1,0 +1,144 @@
+﻿@model MathApp.Models.DbModels.MathProblem
+
+@{
+    ViewData["Title"] = "CreateTopic";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a href="/MathProblems/Browse">Моите задачи</a> / Нова задача
+</p>
+<h1 style="margin-top:2rem">Нова задача</h1>
+
+<div>
+    <hr />
+    <form method="post">
+        <fieldset>
+            <table style="width:100%;">
+                <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Условие</legend></td></tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="form-group">
+                            <textarea name="Conditions" class="form-control" id="ConditionsTextArea" rows="6">@Model.Conditions</textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Решение</legend></td></tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="form-group">
+                            <textarea name="Solution" class="form-control" id="SolutionTextArea" rows="6">@Model.Solution</textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Отговори</legend></td></tr>
+                @if (Model.Answers != null)
+                {
+                    @for (var i = 0; i < Model.Answers.Count(); i++)
+                    {
+                            <tr class="answer">
+                                <td>
+                                    <div class="form-group">
+                                        <label class="form-label mt-4">Отговор @(i+1)</label>
+                                        <input type="text" name="Answers[@i].Name" value="@Model.Answers[i].Name" class="form-control" id="Answers[i].Name" aria-describedby="emailHelp" placeholder="Въведете отговор">
+                                    </div>
+                                </td>
+                                <td>
+                                    <fieldset class="form-group" style="margin-left:40px;margin-top:40px;">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="Answers[@i].Validity" id="Answers[@i].ValidityTrue" value=1>
+                                                Верен
+                                            </label>
+                                            <script>if("@Model.Answers[i].Validity"==1)document.getElementById("Answers[@i].ValidityTrue").checked = true;</script>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="Answers[@i].Validity" id="Answers[@i].ValidityFalse" value=0>
+                                                Грешен
+                                            </label>
+                                            <script>if("@Model.Answers[i].Validity"!=1)document.getElementById("Answers[@i].ValidityFalse").checked = true;</script>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="2" style="text-align:right">
+                        <input type="submit" id="add-answer" class="btn btn-primary" value="Добави отговор" formaction="/MathProblems/AddAnswerCreate"/>
+                        <input type="submit" class="btn btn-primary" value="Премахни отговор" formaction="/MathProblems/RemoveAnswerCreate" />
+                    </td>
+                </tr>
+                
+                <tr><td colspan="2"><legend class="mt-4" style="margin-bottom:0;">Степени на сложност</legend></td></tr>
+                @if (Model.Categories != null)
+                {
+                    @for (var i = 0; i < Model.Categories.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <label for="Categories[@i].Grade" class="form-label mt-4">Клас</label>
+                                    <select name="Categories[@i].Grade" value="@Model.Categories[i].Grade" class="form-select" id="Categories[@i].Grade">
+                                        <option value="1">1 клас</option>
+                                        <option value="2">2 клас</option>
+                                        <option value="3">3 клас</option>
+                                        <option value="4">4 клас</option>
+                                        <option value="5">5 клас</option>
+                                        <option value="6">6 клас</option>
+                                        <option value="7">7 клас</option>
+                                        <option value="8">8 клас</option>
+                                        <option value="9">9 клас</option>
+                                        <option value="10">10 клас</option>
+                                        <option value="11">11 клас</option>
+                                        <option value="12">12 клас</option>
+                                    </select>
+                                    <script>document.getElementById("Categories[@i].Grade").selectedIndex = @(Model.Categories[i].Grade-1);</script>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <label for="Categories[@i].Difficulty" class="form-label mt-4">Ниво</label>
+                                    <select name="Categories[@i].Difficulty" value="@Model.Categories[i].Difficulty" class="form-select" id="Categories[@i].Difficulty">
+                                        <option value="A">А (задачи за всички ученици)</option>
+                                        <option value="B">В (задачи за отлична подготовка)</option>
+                                        <option value="C">С (задачи за състезания)</option>
+                                    </select>
+                                    <script>
+                                        if ("@Model.Categories[i].Difficulty" == "A") document.getElementById("Categories[@i].Difficulty").selectedIndex = 0;
+                                        else if ("@Model.Categories[i].Difficulty" == "B") document.getElementById("Categories[@i].Difficulty").selectedIndex = 1;
+                                        else document.getElementById("Categories[@i].Difficulty").selectedIndex = 2;
+                                    </script>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="2" style="text-align:right">
+                        <input type="submit" class="btn btn-primary" value="Добави степен" formaction="/MathProblems/AddCategoryCreate" />
+                        <input type="submit" class="btn btn-primary" value="Премахни степен" formaction="/MathProblems/RemoveCategoryCreate" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left">
+                        <input type="submit" class="btn btn-primary" value="Назад" formaction="/MathProblems/Browse" style="margin-top:1.5rem;" />
+                    </td>
+                    <td style="text-align:right">
+                        <input type="submit" class="btn btn-primary" value="Запази задачата" formaction="/MathProblems/Create" style="margin-top:1.5rem;" />
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}

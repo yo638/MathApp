@@ -1,0 +1,180 @@
+﻿@model MathApp.Models.BusinessModels.SearchMathProblems
+
+@{
+    ViewData["Title"] = "Browse";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+    var userFromSession = Context.Items["User"] as MathApp.Models.DbModels.User;
+    var IdRoleUser = userFromSession?.IdRole;
+
+}
+
+<div style="margin-bottom:1.5rem">
+    <table style="margin-top:5rem;width:100%;">
+        <tr>
+            <td>
+                @if (IdRoleUser.ToString() == "1") {
+                    <h1>Задачи</h1>
+                }
+                else
+                {
+                    <h1>Моите задачи</h1>
+                }
+            </td>
+            <td style="text-align:right"><a asp-action="Create" target="_parent"><button class="btn btn-primary">Създай нова задача</button></a></td>
+        </tr>
+    </table>
+    <hr />
+</div>
+<!--Search Filters-->
+<button onclick="mySearchFunction()" class="btn btn-outline-primary" style="margin-bottom:1.5rem">Търсене</button>
+<form method="post" id="searchform" display="none">
+    <table style="width: 100%; margin-bottom: 1.5rem">
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.uslovie" class="form-control" id="searchuslovie" value="@Model.criteria.uslovie" placeholder="uslovie">
+                    <label for="floatingInput">Търси в условието</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.solution" class="form-control" id="searchreshenie" value="@Model.criteria.solution" placeholder="reshenie">
+                    <label for="floatingInput">Търси в решението</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.answer" class="form-control" id="searchotgovor" value="@Model.criteria.answer" placeholder="otgovor">
+                    <label for="floatingInput">Търси в отговорите</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="text" name="criteria.anywhere" class="form-control" id="searchanywhere" value="@Model.criteria.anywhere" placeholder="anywhere">
+                    <label for="floatingInput">Търси навсякъде</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-label mt-4">Период на създаване на задачата</div>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">От</div>
+            </td>
+            <td>
+                <input type="date" class="form-control" name="criteria.fromDate" value="@Model.criteria.fromDate" id="criteria.fromDate"/>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">До</div>
+            </td>
+            <td>
+                <input type="date" class="form-control" name="criteria.toDate" value="@Model.criteria.toDate" id="criteria.toDate"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-label mt-4">Сложност:</div>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">Клас</div>
+            </td>
+            <td style="width: 30%">
+                <div class="form-group">
+                    <input type="hidden" name="Id" value="@Model.criteria.category.Id" />
+                    <select name="criteria.category.Grade" value="@Model.criteria.category.Grade" class="form-select" id="criteria.category.Grade">
+                        <option value="0">Всички</option>
+                        <option value="1">1 клас</option>
+                        <option value="2">2 клас</option>
+                        <option value="3">3 клас</option>
+                        <option value="4">4 клас</option>
+                        <option value="5">5 клас</option>
+                        <option value="6">6 клас</option>
+                        <option value="7">7 клас</option>
+                        <option value="8">8 клас</option>
+                        <option value="9">9 клас</option>
+                        <option value="10">10 клас</option>
+                        <option value="11">11 клас</option>
+                        <option value="12">12 клас</option>
+                    </select>
+                    <script>document.getElementById("criteria.category.Grade").selectedIndex = @(Model.criteria.category.Grade);</script>
+                </div>
+            </td>
+            <td>
+                <div class="form-label mt-4 me-3" style="text-align:right">Ниво</div>
+            </td>
+            <td style="width: 30%">
+                <div class="form-group">
+                    <select name="criteria.category.Difficulty" value="@Model.criteria.category.Difficulty" class="form-select" id="criteria.category.Difficulty">
+                        <option value="X">Всички</option>
+                        <option value="A">А (задачи за всички ученици)</option>
+                        <option value="B">В (задачи за отлична подготовка)</option>
+                        <option value="C">С (задачи за състезания)</option>
+                    </select>
+                    <script>
+                             if ("@Model.criteria.category.Difficulty" == "A") document.getElementById("criteria.category.Difficulty").selectedIndex = 1;
+                             else if ("@Model.criteria.category.Difficulty" == "B") document.getElementById("criteria.category.Difficulty").selectedIndex = 2;
+                             else if ("@Model.criteria.category.Difficulty" == "C") document.getElementById("criteria.category.Difficulty").selectedIndex = 3;
+                             else document.getElementById("criteria.category.Difficulty").selectedIndex = 0;
+                    </script>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="5">
+                <div class="form-floating mb-3">
+                    <input type="submit" value="Търси" class="btn btn-primary" formaction="/MathProblems/Search/" style="width: 100%; margin-top: 1.5rem">
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<!--List of MathProblems-->
+<div class="list-group">
+    @if (Model != null)
+    {
+        @for (var i = 0; i < Model.mathProblems.Count(); i = i + 1)
+        {
+            <input type="hidden" name="Model.mathProblems.ElementAt(@i).Id" value="@Model.mathProblems.ElementAt(i).Id" />
+            <input type="hidden" name="Model.mathProblems.ElementAt(@i).Conditions" value="@Model.mathProblems.ElementAt(i).Conditions" />
+            <input type="hidden" name="Model.mathProblems.ElementAt(@i).UpdatedTimeAgo" value="@Model.mathProblems.ElementAt(i).UpdatedTimeAgo" />
+            <a asp-action="Edit" asp-route-id="@Model.mathProblems.ElementAt(i).Id" class="@(i%2==0 ? "list-group-item list-group-item-action flex-column align-items-start active" : "list-group-item list-group-item-action flex-column align-items-start")">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Задача @(i+1)</h5>
+                    <small>@Model.mathProblems.ElementAt(i).UpdatedTimeAgo</small>
+                </div>
+                <p class="mb-1">@Model.mathProblems.ElementAt(i).Conditions</p>
+            </a>
+        }
+    }
+</div>
+
+
+<script>
+    document.getElementById("searchform").style.display = "none";
+    function mySearchFunction() {
+        var x = document.getElementById("searchform");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
+
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}

@@ -1,0 +1,83 @@
+﻿@model MathApp.Models.DbModels.User
+
+@{
+    ViewData["Title"] = "RegisterUserByAdmin";
+    Layout = "~/Views/Shared/_LayoutIn.cshtml";
+}
+<script src="~/Scripts/site.js"></script>
+<p class="breadcrumb-item" style="color: #78c2ad; margin-top: 2rem;">
+    <a href="/Account/BrowseUsers">Потребители</a> / Нов потребител
+</p>
+<h1 style="margin-top:2rem">Нов потребител</h1>
+
+<div class="form-group row">
+    <hr />
+    <form name="RegisterForm" method="post" onsubmit="return validateUserRegistration()">
+    <table width="65%" align="center">
+                        <tr>
+                            <td colspan="2">
+                                <div class="form-group">
+                                    <label for="IdRole" class="form-label mt-4">Роля</label>
+                                    <select name="IdRole" value="@Model.IdRole" class="form-select" id="IdRole">
+                                        <option value="1">Администратор</option>
+                                        <option value="2">Учител</option>
+                                    </select>
+                                    <script>document.getElementById("IdRole").selectedIndex = @(Model.IdRole-1);</script>
+                                </div>
+                            </td>
+                        </tr>        
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Потребителско име:</label>
+                <input type="text" name="Username" class="form-control" id="Username" placeholder = "Въведете потребителско име">
+                <div id="usernameError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Име:</label>
+                <input type="text" name="Name" class="form-control" id="Name" placeholder = "Въведете пълно име">
+                <div id="nameError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Имейл:</label>
+                <input type="text" name="Email" class="form-control" id="Email" placeholder = "Въведете имейл">
+                <div id="emailError" style="color:red"></div>
+                <input type="hidden" name="EmailConfirmation" value=0>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Парола:</label>
+                <input type="text" name="Password" class="form-control" id="Password" placeholder = "Въведете парола">
+                <div id="passwordError" style="color:red"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label class="form-label mt-4">Повторете паролата:</label>
+                <input type="text" class="form-control" id="RepeatPassword"  placeholder = "Повторете паролата">
+                <div id="repeatPasswordError" style="color:red"></div>
+            </td>
+        </tr>
+                <tr>
+                    <td style="text-align:left">
+                        <input type="submit" class="btn btn-primary" value="Назад" formaction="/Account/BrowseUsers" style="margin-top:1.5rem;" />
+                    </td>
+                    <td style="text-align:right">
+                        <input type="submit" id="submitbtn" class="btn btn-primary" value="Регистриране" formaction="/Account/RegisterUserByAdmin" style="margin-top:1.5rem;"/>
+                    </td>
+                </tr>
+    </table>
+    </form>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        toastr["@ViewBag.MessageType"]("@ViewBag.Message");
+        ViewData.Clear();
+    </script>
+}

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MathApp.Models;
+using MathApp.Models.DbModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
@@ -20,30 +21,9 @@ namespace MathApp.Controllers
         {
             _logger = logger;
         }
-        Connection connection = new Connection();
         public IActionResult Index()
         {
-            /*List<Answer> answers = new List<Answer>();
-            //Connect to MySQL
-            using (MySqlConnection con = new MySqlConnection("server=localhost;user=root;database=bank;port=3307;password=%s1WnX6*"))
-            {
-                con.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from answers", con);
-                MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    //Extract you data
-                    Answer answer = new Answer();
-                    //answer.SetIdAnswer(Convert.ToInt32(reader["id_answer"]));
-                    answer.idAnswer=reader["id_answer"].ToString();
-                    answer.answer=reader["answer"].ToString();
-                    HttpContext.Session.SetString("AnswerSessionKey", JsonConvert.SerializeObject(answer));
-                    answers.Add(answer);
-                }
-                reader.Close();
-            }
 
-            */
             return View();
         }
 
